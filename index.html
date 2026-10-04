@@ -1,0 +1,1024 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Roll &amp; Co. | Chicken, fire, paratha | Bolton</title>
+<meta name="description" content="Burgers, paratha rolls, loaded fries and rice, cooked to order in Bolton. Order online for collection.">
+<meta name="theme-color" content="#0D0C0B">
+<link rel="icon" href="/assets/logo-mark.png">
+
+<meta property="og:title" content="Roll &amp; Co. | Chicken, fire, paratha">
+<meta property="og:description" content="Burgers, paratha rolls, loaded fries and rice, cooked to order in Bolton.">
+<meta property="og:image" content="/assets/logo.png">
+<meta property="og:type" content="restaurant.restaurant">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@85,500;85,700;85,800;85,900&family=Instrument+Sans:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.1/src/regular/style.css">
+
+<style>
+/* ═══════════════════════════════════════════════════════════════
+   ROLL & CO.
+   Single dark theme, locked. The brand IS flame on charcoal, so a
+   light mode would be a different brand rather than a preference.
+
+   Radius rule, applied everywhere:
+     interactive  -> full pill
+     surfaces     -> 14px
+     small chips  -> 8px
+   ═══════════════════════════════════════════════════════════════ */
+:root{
+  --bg:#0D0C0B;
+  --surface:#141211;
+  --surface-2:#1B1816;
+  --surface-3:#231F1C;
+  --line:#2A2522;
+  --line-soft:#1F1B19;
+
+  --ink:#F7F1EA;
+  --ink-2:#CFC3B7;
+  --muted:#897C71;
+
+  --flame-1:#FF3B00;
+  --flame-2:#FF7A00;
+  --flame-3:#FFC107;
+  --flame:linear-gradient(118deg,var(--flame-1) 0%,var(--flame-2) 52%,var(--flame-3) 100%);
+
+  --open:#2FD08A;
+  --shut:#FF6B5B;
+
+  --r-chip:8px;
+  --r-surface:14px;
+  --r-pill:999px;
+
+  --ease:cubic-bezier(.16,1,.3,1);
+  --display:"Archivo",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  --body:"Instrument Sans",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+}
+
+*,*::before,*::after{box-sizing:border-box}
+html{scroll-behavior:smooth}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+
+body{
+  margin:0;background:var(--bg);color:var(--ink);
+  font-family:var(--body);font-size:16px;line-height:1.55;
+  -webkit-font-smoothing:antialiased;
+  overflow-x:hidden;
+}
+img{max-width:100%;display:block}
+button{font:inherit;color:inherit;border:none;background:none;cursor:pointer}
+input,textarea{font:inherit;color:inherit}
+a{color:inherit}
+:focus-visible{outline:2px solid var(--flame-2);outline-offset:3px;border-radius:4px}
+
+.wrap{width:100%;max-width:1200px;margin:0 auto;padding:0 20px}
+@media (max-width:640px){ .wrap{padding:0 16px} }
+
+h1,h2,h3{font-family:var(--display);font-weight:900;letter-spacing:-.035em;margin:0;text-wrap:balance}
+.num{font-variant-numeric:tabular-nums}
+
+/* Grain sits on a fixed layer so it never repaints during scroll. */
+.grain{
+  position:fixed;inset:0;z-index:60;pointer-events:none;opacity:.035;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3'/%3E%3C/filter%3E%3Crect width='120' height='120' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+/* ─── Nav ──────────────────────────────────────────────────── */
+.nav{
+  position:sticky;top:0;z-index:40;height:68px;
+  display:flex;align-items:center;gap:16px;
+  background:color-mix(in srgb,var(--bg) 88%,transparent);
+  backdrop-filter:blur(16px) saturate(1.3);
+  border-bottom:1px solid var(--line-soft);
+}
+.nav .wrap{display:flex;align-items:center;gap:16px}
+.nav img{height:38px;width:auto}
+.nav-sp{flex:1}
+.status{
+  display:inline-flex;align-items:center;gap:8px;
+  font-size:.8rem;font-weight:600;color:var(--ink-2);white-space:nowrap;
+}
+.status .dot{width:7px;height:7px;border-radius:50%;background:var(--muted);flex:0 0 auto}
+.status.is-open .dot{background:var(--open);box-shadow:0 0 0 3px color-mix(in srgb,var(--open) 20%,transparent)}
+.status.is-shut .dot{background:var(--shut)}
+@media (max-width:560px){ .status span.txt{display:none} }
+
+.btn{
+  display:inline-flex;align-items:center;justify-content:center;gap:9px;
+  height:46px;padding:0 22px;border-radius:var(--r-pill);
+  font-family:var(--display);font-weight:800;font-size:.92rem;letter-spacing:-.01em;
+  white-space:nowrap;
+  transition:transform .18s var(--ease),filter .18s var(--ease),background .18s var(--ease);
+}
+.btn:active{transform:scale(.97)}
+.btn-flame{background:var(--flame);color:#1A0C00}
+.btn-flame:hover{filter:brightness(1.08)}
+.btn-ghost{background:var(--surface-2);color:var(--ink);border:1px solid var(--line)}
+.btn-ghost:hover{background:var(--surface-3)}
+.btn:disabled{opacity:.45;cursor:not-allowed;transform:none;filter:none}
+.btn-sm{height:40px;padding:0 17px;font-size:.86rem}
+
+/* ─── Hero ─────────────────────────────────────────────────── */
+/* Asymmetric split: type carries the left, the mark burns on the right. */
+.hero{
+  position:relative;min-height:calc(100dvh - 68px);
+  display:grid;align-items:center;
+  padding:40px 0 120px;overflow:hidden;
+}
+.hero-grid{
+  display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,.85fr);
+  gap:48px;align-items:center;
+}
+@media (max-width:900px){
+  .hero{min-height:auto;padding:32px 0 96px}
+  .hero-grid{grid-template-columns:1fr;gap:28px}
+}
+
+/* The fire behind everything. Pure CSS so there is nothing to load,
+   and it sits under a real photograph the moment one exists. */
+.ember{
+  position:absolute;inset:0;z-index:-1;pointer-events:none;
+  background:
+    radial-gradient(60% 50% at 78% 38%, rgba(255,122,0,.26), transparent 70%),
+    radial-gradient(45% 40% at 92% 62%, rgba(255,59,0,.20), transparent 72%),
+    radial-gradient(70% 60% at 12% 88%, rgba(255,193,7,.07), transparent 70%);
+}
+.hero-photo{
+  position:absolute;inset:0;z-index:-2;
+  background-size:cover;background-position:center;
+  opacity:0;transition:opacity .8s var(--ease);
+}
+.hero-photo.has-image{opacity:.5}
+
+h1{font-size:clamp(3.1rem,12vw,7.2rem);line-height:.88}
+h1 .fire{
+  background:var(--flame);-webkit-background-clip:text;background-clip:text;color:transparent;
+}
+.hero-sub{
+  font-size:clamp(1rem,1.9vw,1.2rem);color:var(--ink-2);
+  max-width:46ch;margin:24px 0 32px;line-height:1.5;
+}
+.hero-cta{display:flex;gap:12px;flex-wrap:wrap;align-items:center}
+.hero-cta .btn{height:54px;padding:0 28px;font-size:1rem}
+
+.hero-mark{position:relative;display:grid;place-items:center}
+.hero-mark img{
+  width:min(100%,460px);
+  filter:drop-shadow(0 26px 70px rgba(255,90,0,.38));
+}
+@media (max-width:900px){ .hero-mark img{width:min(78%,340px)} }
+
+/* ─── Section furniture ────────────────────────────────────── */
+section{position:relative}
+.sec{padding:clamp(72px,10vw,128px) 0}
+.sec-head{margin-bottom:clamp(28px,4vw,44px)}
+.sec-head h2{font-size:clamp(2rem,5.5vw,3.4rem);line-height:.95}
+.sec-head p{color:var(--ink-2);margin:14px 0 0;max-width:58ch}
+
+/* ─── Menu ─────────────────────────────────────────────────── */
+.catnav{
+  position:sticky;top:68px;z-index:30;
+  display:flex;gap:8px;overflow-x:auto;scrollbar-width:none;
+  padding:14px 0;margin-bottom:8px;
+  background:color-mix(in srgb,var(--bg) 92%,transparent);
+  backdrop-filter:blur(14px);
+  border-bottom:1px solid var(--line-soft);
+}
+.catnav::-webkit-scrollbar{display:none}
+.catnav button{
+  flex:0 0 auto;height:38px;padding:0 16px;border-radius:var(--r-pill);
+  background:var(--surface-2);border:1px solid var(--line);
+  font-weight:600;font-size:.86rem;color:var(--ink-2);
+  transition:background .18s var(--ease),color .18s var(--ease),border-color .18s var(--ease);
+}
+.catnav button:hover{color:var(--ink);border-color:var(--muted)}
+.catnav button[aria-current="true"]{background:var(--flame);color:#1A0C00;border-color:transparent}
+
+.cat{padding:clamp(34px,5vw,56px) 0 0;scroll-margin-top:122px}
+.cat h3{
+  font-size:clamp(1.5rem,4vw,2.1rem);line-height:1;margin-bottom:20px;
+  display:flex;align-items:baseline;gap:14px;
+}
+.cat h3 .count{
+  font-family:var(--body);font-size:.78rem;font-weight:500;color:var(--muted);
+  letter-spacing:0;
+}
+
+.items{display:grid;gap:0}
+.item{
+  display:grid;grid-template-columns:1fr auto;gap:18px;align-items:center;
+  padding:20px 0;border-top:1px solid var(--line-soft);
+}
+.item:first-child{border-top:1px solid var(--line)}
+.item-main{min-width:0}
+.item-name{
+  font-family:var(--display);font-weight:800;font-size:1.06rem;letter-spacing:-.02em;
+  display:flex;align-items:center;gap:10px;flex-wrap:wrap;
+}
+.sig{
+  font-family:var(--body);font-size:.64rem;font-weight:600;letter-spacing:.09em;
+  text-transform:uppercase;padding:3px 8px;border-radius:var(--r-chip);
+  background:color-mix(in srgb,var(--flame-2) 16%,transparent);
+  color:var(--flame-3);
+}
+.item-desc{color:var(--muted);font-size:.9rem;margin-top:5px;max-width:52ch;line-height:1.45}
+.item-right{display:flex;align-items:center;gap:16px}
+.price{font-family:var(--display);font-weight:800;font-size:1.06rem;min-width:56px;text-align:right}
+
+.add{
+  width:44px;height:44px;border-radius:var(--r-pill);
+  background:var(--surface-2);border:1px solid var(--line);
+  display:grid;place-items:center;font-size:1.15rem;color:var(--ink);
+  transition:background .18s var(--ease),border-color .18s var(--ease),transform .18s var(--ease);
+}
+.add:hover{background:var(--flame);color:#1A0C00;border-color:transparent}
+.add:active{transform:scale(.9)}
+
+.stepper{display:flex;align-items:center;gap:4px;background:var(--surface-2);
+  border:1px solid var(--line);border-radius:var(--r-pill);padding:3px}
+.stepper button{width:36px;height:36px;border-radius:var(--r-pill);display:grid;place-items:center;
+  font-size:1rem;transition:background .15s var(--ease)}
+.stepper button:hover{background:var(--surface-3)}
+.stepper .q{min-width:26px;text-align:center;font-weight:700;font-variant-numeric:tabular-nums}
+
+/* ─── Collection info ──────────────────────────────────────── */
+/* Offset flow, not three matching cards. */
+.flow{display:grid;gap:4px}
+.flow-row{
+  display:grid;grid-template-columns:minmax(0,.9fr) minmax(0,1.1fr);
+  gap:24px;padding:30px 0;border-top:1px solid var(--line-soft);align-items:start;
+}
+.flow-row:first-child{border-top:1px solid var(--line)}
+.flow-row h4{
+  font-family:var(--display);font-weight:900;font-size:clamp(1.3rem,3.4vw,1.9rem);
+  letter-spacing:-.03em;margin:0;
+}
+.flow-row p{margin:0;color:var(--ink-2);max-width:48ch}
+.flow-row:nth-child(2){padding-left:clamp(0px,4vw,56px)}
+.flow-row:nth-child(3){padding-left:clamp(0px,8vw,112px)}
+@media (max-width:760px){
+  .flow-row{grid-template-columns:1fr;gap:8px;padding-left:0 !important}
+}
+
+/* ─── Find us ──────────────────────────────────────────────── */
+.find{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,.82fr);gap:clamp(28px,5vw,64px)}
+@media (max-width:860px){ .find{grid-template-columns:1fr} }
+.addr{font-size:clamp(1.3rem,3.4vw,1.9rem);font-family:var(--display);font-weight:800;
+  letter-spacing:-.03em;line-height:1.2;margin:0 0 22px}
+.meta-line{display:flex;align-items:center;gap:11px;color:var(--ink-2);margin-bottom:11px;font-size:.95rem}
+.meta-line i{color:var(--flame-2);font-size:1.15rem}
+
+.hours{border-top:1px solid var(--line)}
+.hours-row{display:flex;justify-content:space-between;gap:16px;padding:11px 0;
+  border-bottom:1px solid var(--line-soft);font-size:.92rem}
+.hours-row.today{color:var(--ink);font-weight:600}
+.hours-row:not(.today){color:var(--muted)}
+.hours-row .d{text-transform:capitalize}
+
+/* ─── Footer ───────────────────────────────────────────────── */
+footer{padding:56px 0 140px;border-top:1px solid var(--line);color:var(--muted);font-size:.86rem}
+footer .wrap{display:flex;gap:20px;flex-wrap:wrap;align-items:center}
+footer a:hover{color:var(--ink)}
+.allergen{
+  margin-top:18px;padding:14px 16px;border-radius:var(--r-surface);
+  background:var(--surface);border:1px solid var(--line);
+  color:var(--ink-2);font-size:.86rem;max-width:62ch;line-height:1.5;
+}
+
+/* ─── Basket bar ───────────────────────────────────────────── */
+/* Pinned, always one tap from checkout. The single most important
+   piece of UI on the page. */
+.bar{
+  position:fixed;left:0;right:0;bottom:0;z-index:45;
+  padding:12px 16px calc(12px + env(safe-area-inset-bottom,0px));
+  background:color-mix(in srgb,var(--surface) 94%,transparent);
+  backdrop-filter:blur(18px);border-top:1px solid var(--line);
+  transform:translateY(110%);transition:transform .34s var(--ease);
+}
+.bar.show{transform:none}
+.bar-in{max-width:1200px;margin:0 auto;display:flex;align-items:center;gap:14px}
+.bar-info{display:flex;flex-direction:column;line-height:1.15}
+.bar-count{font-size:.76rem;color:var(--muted);font-weight:600}
+.bar-total{font-family:var(--display);font-weight:900;font-size:1.35rem;letter-spacing:-.02em}
+.bar .btn{margin-left:auto;height:50px;padding:0 26px}
+
+/* ─── Sheet ────────────────────────────────────────────────── */
+.scrim{
+  position:fixed;inset:0;z-index:50;background:rgba(5,4,4,.72);
+  backdrop-filter:blur(6px);opacity:0;pointer-events:none;transition:opacity .3s var(--ease);
+}
+.scrim.open{opacity:1;pointer-events:auto}
+.sheet{
+  position:fixed;left:0;right:0;bottom:0;z-index:51;
+  max-height:92dvh;display:flex;flex-direction:column;
+  background:var(--surface);border-top:1px solid var(--line);
+  border-radius:var(--r-surface) var(--r-surface) 0 0;
+  transform:translateY(100%);transition:transform .38s var(--ease);
+}
+.sheet.open{transform:none}
+@media (min-width:760px){
+  .sheet{left:auto;right:24px;bottom:24px;width:440px;max-height:min(86dvh,760px);
+    border-radius:var(--r-surface);border:1px solid var(--line)}
+}
+.sheet-head{display:flex;align-items:center;gap:12px;padding:18px 20px;border-bottom:1px solid var(--line)}
+.sheet-head h3{font-size:1.15rem;letter-spacing:-.02em}
+.sheet-body{padding:6px 20px 20px;overflow-y:auto;flex:1 1 auto}
+.sheet-foot{padding:16px 20px calc(18px + env(safe-area-inset-bottom,0px));border-top:1px solid var(--line);background:var(--surface-2)}
+.iconbtn{width:40px;height:40px;border-radius:var(--r-pill);display:grid;place-items:center;
+  background:var(--surface-2);border:1px solid var(--line);font-size:1.05rem;margin-left:auto}
+.iconbtn:hover{background:var(--surface-3)}
+
+.brow{display:grid;grid-template-columns:1fr auto auto;gap:12px;align-items:center;
+  padding:14px 0;border-bottom:1px solid var(--line-soft)}
+.brow-n{font-weight:600;font-size:.95rem}
+.brow-p{color:var(--muted);font-size:.82rem;margin-top:2px}
+.brow-t{font-family:var(--display);font-weight:800;min-width:58px;text-align:right}
+
+.totals{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:14px}
+.totals .k{color:var(--ink-2);font-weight:500}
+.totals .v{font-family:var(--display);font-weight:900;font-size:1.6rem;letter-spacing:-.025em}
+
+.field{margin-bottom:14px}
+.field label{display:block;font-size:.82rem;font-weight:600;color:var(--ink-2);margin-bottom:6px}
+.field input,.field textarea{
+  width:100%;min-height:48px;padding:12px 14px;
+  background:var(--surface-3);border:1px solid var(--line);border-radius:var(--r-chip);
+  font-size:1rem;
+}
+.field input::placeholder,.field textarea::placeholder{color:var(--muted)}
+.field input:focus,.field textarea:focus{outline:none;border-color:var(--flame-2);
+  box-shadow:0 0 0 3px color-mix(in srgb,var(--flame-2) 18%,transparent)}
+.field textarea{resize:vertical;min-height:72px;line-height:1.5}
+.hint{font-size:.78rem;color:var(--muted);margin-top:6px}
+.foot-note{font-size:.78rem;color:var(--muted);text-align:center;margin-top:10px;line-height:1.5}
+.tel{font-family:var(--display);font-weight:800;letter-spacing:-.01em;color:var(--ink);
+     text-decoration:none;border-bottom:2px solid var(--flame-2);padding-bottom:1px}
+.tel:hover{color:var(--flame-2)}
+.err{
+  color:var(--shut);font-size:.86rem;font-weight:600;margin-bottom:12px;
+  padding:11px 13px;border-radius:var(--r-chip);
+  background:color-mix(in srgb,var(--shut) 11%,transparent);
+  border:1px solid color-mix(in srgb,var(--shut) 28%,transparent);
+}
+
+/* ─── Empty / loading / done ───────────────────────────────── */
+.empty{text-align:center;padding:48px 20px;color:var(--muted)}
+.empty i{font-size:2.2rem;color:var(--line);display:block;margin-bottom:12px}
+.empty strong{display:block;color:var(--ink-2);font-weight:600;margin-bottom:5px}
+
+.skel{height:84px;border-radius:var(--r-surface);background:var(--surface-2);
+  margin-bottom:10px;position:relative;overflow:hidden}
+.skel::after{content:"";position:absolute;inset:0;transform:translateX(-100%);
+  background:linear-gradient(90deg,transparent,rgba(255,255,255,.04),transparent);
+  animation:shim 1.5s infinite}
+@keyframes shim{to{transform:translateX(100%)}}
+
+.done{text-align:center;padding:16px 4px 8px}
+.done .no{font-family:var(--display);font-weight:900;font-size:3.4rem;line-height:1;
+  background:var(--flame);-webkit-background-clip:text;background-clip:text;color:transparent;
+  margin:10px 0 6px}
+.done p{color:var(--ink-2);margin:0 0 6px}
+
+.shut-note{
+  display:flex;gap:11px;align-items:flex-start;
+  padding:14px 16px;border-radius:var(--r-surface);margin-bottom:18px;
+  background:color-mix(in srgb,var(--shut) 10%,transparent);
+  border:1px solid color-mix(in srgb,var(--shut) 26%,transparent);
+  color:var(--ink-2);font-size:.9rem;line-height:1.5;
+}
+.shut-note i{color:var(--shut);font-size:1.2rem;flex:0 0 auto}
+
+/* Reveal targets start hidden only when motion is welcome, so a
+   reduced-motion visitor never sees a blank page. */
+@media (prefers-reduced-motion:no-preference){
+  .rv{opacity:0;transform:translateY(22px)}
+}
+@media (prefers-reduced-motion:reduce){
+  *{animation-duration:.01ms !important;transition-duration:.01ms !important}
+}
+</style>
+</head>
+<body>
+
+<div class="grain" aria-hidden="true"></div>
+
+<!-- ══ Nav ══ -->
+<nav class="nav">
+  <div class="wrap">
+    <a href="#top" aria-label="Roll and Co. home"><img src="/assets/logo-mark.png" alt="Roll &amp; Co."></a>
+    <span class="nav-sp"></span>
+    <span class="status" id="status" aria-live="polite">
+      <span class="dot"></span><span class="txt">Checking</span>
+    </span>
+    <a class="btn btn-flame btn-sm" href="#menu">Order</a>
+  </div>
+</nav>
+
+<!-- ══ Hero ══ -->
+<header class="hero" id="top">
+  <div class="ember" aria-hidden="true"></div>
+  <!-- Becomes a real photograph the moment one exists. See the note in
+       the handover: one strong shot carries this whole section. -->
+  <div class="hero-photo" id="heroPhoto" aria-hidden="true"></div>
+  <div class="wrap hero-grid">
+    <div>
+      <h1>Chicken,<br><span class="fire">fire</span>, paratha.</h1>
+      <p class="hero-sub">
+        Burgers, rolls, loaded fries and rice, cooked to order in Bolton.
+        Ready in about twenty minutes.
+      </p>
+      <div class="hero-cta">
+        <a class="btn btn-flame" href="#menu">
+          <i class="ph ph-shopping-bag" aria-hidden="true"></i> Order for collection
+        </a>
+        <a class="btn btn-ghost" href="#find">Find us</a>
+      </div>
+    </div>
+    <div class="hero-mark">
+      <!-- logo-mark, not logo: the other file has a cream background
+           baked into the PNG and shows as a pale slab on charcoal. -->
+      <img src="/assets/logo-mark.png" alt="" width="460" height="300" fetchpriority="high">
+    </div>
+  </div>
+</header>
+
+<!-- ══ Menu ══ -->
+<main>
+<section class="sec" id="menu" style="padding-top:0">
+  <div class="wrap">
+    <div class="catnav" id="catnav" role="tablist" aria-label="Menu sections"></div>
+    <div id="menuRoot">
+      <div class="skel"></div><div class="skel"></div><div class="skel"></div><div class="skel"></div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ Collection ══ -->
+<section class="sec" id="collection">
+  <div class="wrap">
+    <div class="sec-head rv">
+      <h2>Collection only, for now</h2>
+      <p>Order here, pay at the counter when you pick it up. Delivery is coming later.</p>
+    </div>
+    <div class="flow">
+      <div class="flow-row rv">
+        <h4>Order online</h4>
+        <p>Build your order, leave your name and number. It goes straight to the kitchen screen, no phone call needed.</p>
+      </div>
+      <div class="flow-row rv">
+        <h4>We cook it fresh</h4>
+        <p>Nothing sits under a lamp waiting. Most orders are ready in about twenty minutes, a little longer when it is busy.</p>
+      </div>
+      <div class="flow-row rv">
+        <h4>Collect and pay</h4>
+        <p>Give your name at the counter and pay by cash or card. Card payment online is coming soon.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ Find us ══ -->
+<section class="sec" id="find">
+  <div class="wrap find">
+    <div class="rv">
+      <div class="sec-head"><h2>Find us</h2></div>
+      <p class="addr">Bolton<br>BL3 5QT</p>
+      <div class="meta-line">
+        <i class="ph ph-map-pin" aria-hidden="true"></i>
+        <a href="https://maps.google.com/?q=BL3+5QT" target="_blank" rel="noopener">Open in Maps</a>
+      </div>
+      <div class="meta-line">
+        <i class="ph ph-clock" aria-hidden="true"></i>
+        <span id="findStatus">Checking opening hours</span>
+      </div>
+      <div class="meta-line">
+        <i class="ph ph-phone" aria-hidden="true"></i>
+        <a class="tel" id="telFind" href="#">Loading</a>
+      </div>
+      <div class="allergen">
+        <strong>Allergies or intolerances?</strong>
+        Please speak to our team before ordering. We prepare food in a kitchen that handles
+        gluten, milk, egg, sesame, soya and mustard, so we cannot guarantee any dish is free from traces.
+      </div>
+    </div>
+    <div class="rv">
+      <div class="hours" id="hours"></div>
+    </div>
+  </div>
+</section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <img src="/assets/logo-mark.png" alt="Roll &amp; Co." style="height:34px;width:auto">
+    <span class="nav-sp"></span>
+    <a class="tel" id="telFoot" href="#">Loading</a>
+    <span>Bolton BL3 5QT</span>
+  </div>
+</footer>
+
+<!-- ══ Basket bar ══ -->
+<div class="bar" id="bar">
+  <div class="bar-in">
+    <span class="bar-info">
+      <span class="bar-count num" id="barCount">0 items</span>
+      <span class="bar-total num" id="barTotal">&pound;0.00</span>
+    </span>
+    <button class="btn btn-flame" id="barBtn">
+      View basket <i class="ph ph-arrow-right" aria-hidden="true"></i>
+    </button>
+  </div>
+</div>
+
+<!-- ══ Sheet ══ -->
+<div class="scrim" id="scrim"></div>
+<aside class="sheet" id="sheet" role="dialog" aria-modal="true" aria-labelledby="sheetTitle" aria-hidden="true">
+  <div class="sheet-head">
+    <h3 id="sheetTitle">Your order</h3>
+    <button class="iconbtn" id="sheetClose" aria-label="Close basket">
+      <i class="ph ph-x" aria-hidden="true"></i>
+    </button>
+  </div>
+  <div class="sheet-body" id="sheetBody"></div>
+  <div class="sheet-foot" id="sheetFoot"></div>
+</aside>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js" defer></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js" defer></script>
+<script defer>
+/* ═══════════════════════════════════════════════════════════════
+   One file, no build step. Same discipline as the till: you should
+   be able to open this in two years and read it.
+   ═══════════════════════════════════════════════════════════════ */
+document.addEventListener("DOMContentLoaded", () => {
+
+const $  = s => document.querySelector(s);
+const $$ = s => Array.from(document.querySelectorAll(s));
+const money = n => "£" + (Math.round((Number(n) || 0) * 100) / 100).toFixed(2);
+const esc = s => String(s ?? "").replace(/[&<>"']/g, c =>
+  ({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;" }[c]));
+
+/* Storage can throw in private browsing. A basket that forgets itself
+   is a nuisance; a page that will not load is a lost order. */
+/* ─── Shop details ──────────────────────────────────────────── */
+// CHANGE ME before going live. Several places on this site tell a
+// customer to ring the shop, so the number has to be real and it has to
+// be here, in one place. Set TEL to the takeaway's landline or mobile.
+const TEL = { display: "01204 000000", dial: "+441204000000" };
+
+const store = {
+  get(k, fb){ try{ const v = localStorage.getItem(k); return v === null ? fb : JSON.parse(v); }catch{ return fb; } },
+  set(k, v){ try{ localStorage.setItem(k, JSON.stringify(v)); }catch{} }
+};
+
+const S = {
+  categories: [],
+  shop: null,
+  items: new Map(),                       // id -> item
+  basket: new Map(Object.entries(store.get("rc.basket.v1", {}))),
+  sheet: "basket",                        // basket | done
+  done: null,
+  sending: false,
+  error: null,
+  errorTel: false,                        // show the phone number beside the error
+
+  // Checkout fields live here, not only in the DOM. The sheet re-renders
+  // whenever a quantity changes or a validation error appears, which
+  // replaces the inputs with fresh ones. Without this, a customer who
+  // types their name and then bumps a quantity watches the name vanish,
+  // and the note was lost on every single error. Both are reasons to
+  // give up on an order.
+  form: {
+    name:  store.get("rc.name", ""),
+    phone: store.get("rc.phone", ""),
+    note:  ""
+  }
+};
+
+// Pull whatever is on screen into S.form before anything redraws it.
+function captureForm(){
+  const n = $("#fName"), p = $("#fPhone"), t = $("#fNote");
+  if (n) S.form.name  = n.value;
+  if (p) S.form.phone = p.value;
+  if (t) S.form.note  = t.value;
+}
+
+/* ─── Load ──────────────────────────────────────────────────── */
+function renderTel(){
+  const a = $("#telFind");
+  if (a){ a.textContent = TEL.display; a.href = `tel:${TEL.dial}`; }
+  const f = $("#telFoot");
+  if (f){ f.textContent = TEL.display; f.href = `tel:${TEL.dial}`; }
+}
+
+async function load(){
+  renderTel();
+  try{
+    const r = await fetch("/api/menu");
+    const d = await r.json();
+    if (!r.ok) throw new Error(d.error || "Menu unavailable");
+    S.categories = d.categories || [];
+    S.shop = d.shop || null;
+    for (const c of S.categories) for (const i of c.items) S.items.set(String(i.id), i);
+    renderMenu(); renderStatus(); renderHours(); renderBar();
+    requestAnimationFrame(initMotion);
+  }catch(e){
+    $("#menuRoot").innerHTML =
+      `<div class="empty"><i class="ph ph-warning-circle"></i>
+        <strong>We cannot load the menu right now</strong>
+        Please try again in a moment, or call us on
+        <a class="tel" href="tel:${TEL.dial}">${TEL.display}</a>.</div>`;
+  }
+}
+
+/* ─── Status ────────────────────────────────────────────────── */
+function renderStatus(){
+  const el = $("#status"), s = S.shop;
+  if (!s || s.unknown){ el.querySelector(".txt").textContent = "Hours unavailable"; return; }
+  const open = !!s.can_order;
+  el.classList.toggle("is-open", open);
+  el.classList.toggle("is-shut", !open);
+  el.querySelector(".txt").textContent =
+    open ? `Open until ${s.closes_at}`
+         : (s.accepting_orders === false ? "Not taking orders" : "Closed");
+  $("#findStatus").textContent =
+    open ? `Open now until ${s.closes_at}`
+         : (s.opens_at ? `Closed now. Opens at ${s.opens_at}` : "Closed today");
+}
+
+const DAY_NAMES = { mon:"Monday", tue:"Tuesday", wed:"Wednesday", thu:"Thursday",
+                    fri:"Friday", sat:"Saturday", sun:"Sunday" };
+
+function renderHours(){
+  const s = S.shop;
+  if (!s || !s.hours){ $("#hours").innerHTML = ""; return; }
+  const order = ["mon","tue","wed","thu","fri","sat","sun"];
+  $("#hours").innerHTML = order.map(d => {
+    const h = s.hours[d];
+    const today = s.day === d;
+    return `<div class="hours-row${today ? " today" : ""}">
+      <span class="d">${DAY_NAMES[d]}</span>
+      <span class="num">${h && h.open ? `${esc(h.open)} to ${esc(h.close)}` : "Closed"}</span>
+    </div>`;
+  }).join("");
+}
+
+/* ─── Menu ──────────────────────────────────────────────────── */
+function renderMenu(){
+  $("#catnav").innerHTML = S.categories.map((c, i) =>
+    `<button role="tab" data-cat="${esc(slug(c.name))}" aria-current="${i === 0}">${esc(c.name)}</button>`
+  ).join("");
+
+  $("#menuRoot").innerHTML = S.categories.map(c => `
+    <div class="cat" id="cat-${esc(slug(c.name))}">
+      <h3>${esc(c.name)} <span class="count">${c.items.length} ${c.items.length === 1 ? "item" : "items"}</span></h3>
+      <div class="items">
+        ${c.items.map(i => itemRow(i)).join("")}
+      </div>
+    </div>`).join("");
+
+  $$(".catnav button").forEach(b => b.addEventListener("click", () => {
+    const el = document.getElementById("cat-" + b.dataset.cat);
+    if (el) el.scrollIntoView({ behavior: prefersReduced() ? "auto" : "smooth", block: "start" });
+  }));
+}
+
+function itemRow(i){
+  const id = String(i.id);
+  const qty = S.basket.get(id) || 0;
+  return `<div class="item rv" data-row="${esc(id)}">
+    <div class="item-main">
+      <div class="item-name">${esc(i.name)}${i.badge ? `<span class="sig">${esc(i.badge)}</span>` : ""}</div>
+      ${i.description ? `<div class="item-desc">${esc(i.description)}</div>` : ""}
+    </div>
+    <div class="item-right">
+      <span class="price num">${money(i.price)}</span>
+      ${qty > 0 ? stepper(id, qty) : `
+        <button class="add" data-add="${esc(id)}" aria-label="Add ${esc(i.name)}">
+          <i class="ph ph-plus" aria-hidden="true"></i>
+        </button>`}
+    </div>
+  </div>`;
+}
+
+function stepper(id, qty){
+  return `<div class="stepper">
+    <button data-dec="${esc(id)}" aria-label="Remove one"><i class="ph ph-minus" aria-hidden="true"></i></button>
+    <span class="q num">${qty}</span>
+    <button data-inc="${esc(id)}" aria-label="Add one"><i class="ph ph-plus" aria-hidden="true"></i></button>
+  </div>`;
+}
+
+const slug = s => String(s).toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
+const prefersReduced = () => window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+// Force an element out of the hidden pre-reveal state.
+function reveal(el){
+  if (!el) return;
+  el.classList.remove("rv");
+  el.style.opacity = "1";
+  el.style.transform = "none";
+}
+
+/* ─── Basket ────────────────────────────────────────────────── */
+function setQty(id, qty){
+  captureForm();                          // before the sheet redraws
+  if (qty <= 0) S.basket.delete(id); else S.basket.set(id, Math.min(20, qty));
+  store.set("rc.basket.v1", Object.fromEntries(S.basket));
+  // Repaint only the row that changed, so the page does not jump under
+  // a thumb mid-scroll.
+  const row = document.querySelector(`[data-row="${CSS.escape(id)}"]`);
+  const item = S.items.get(id);
+  if (row && item){
+    row.outerHTML = itemRow(item);
+    // The replacement is a different element from the one the reveal
+    // animation was attached to, so it inherits the hidden starting
+    // state and nothing ever brings it back. Clear it by hand: the row
+    // is plainly already on screen, since the customer just tapped it.
+    reveal(document.querySelector(`[data-row="${CSS.escape(id)}"]`));
+  }
+  renderBar();
+  if ($("#sheet").classList.contains("open")) renderSheet();
+}
+
+const basketLines = () => [...S.basket.entries()]
+  .map(([id, qty]) => ({ item: S.items.get(id), qty }))
+  .filter(l => l.item);
+
+const basketTotal = () => round2(basketLines().reduce((s, l) => s + l.item.price * l.qty, 0));
+const basketCount = () => basketLines().reduce((s, l) => s + l.qty, 0);
+const round2 = n => Math.round((Number(n) || 0) * 100) / 100;
+
+function renderBar(){
+  const n = basketCount();
+  $("#bar").classList.toggle("show", n > 0);
+  $("#barCount").textContent = `${n} ${n === 1 ? "item" : "items"}`;
+  $("#barTotal").textContent = money(basketTotal());
+}
+
+document.addEventListener("click", e => {
+  const add = e.target.closest("[data-add]");
+  if (add) return setQty(add.dataset.add, 1);
+  const inc = e.target.closest("[data-inc]");
+  if (inc) return setQty(inc.dataset.inc, (S.basket.get(inc.dataset.inc) || 0) + 1);
+  const dec = e.target.closest("[data-dec]");
+  if (dec) return setQty(dec.dataset.dec, (S.basket.get(dec.dataset.dec) || 0) - 1);
+});
+
+/* ─── Sheet ─────────────────────────────────────────────────── */
+// Opening the basket is the decision point, so re-check whether the
+// kitchen is still open. A page left sitting on a phone for an hour
+// would otherwise show a Place order button for a shop that shut at ten.
+// Fire and forget: the sheet opens immediately either way.
+async function refreshShop(){
+  try{
+    const d = await fetch("/api/menu", { cache: "no-store" }).then(r => r.ok ? r.json() : null);
+    if (!d || !d.shop) return;
+    const was = S.shop && S.shop.can_order;
+    S.shop = d.shop;
+    renderStatus();
+    if (was !== d.shop.can_order && $("#sheet").classList.contains("open")){
+      captureForm();
+      renderSheet();
+    }
+  }catch{}
+}
+
+function openSheet(){
+  S.sheet = "basket"; S.error = null; S.errorTel = false;
+  renderSheet();
+  refreshShop();
+  $("#scrim").classList.add("open");
+  $("#sheet").classList.add("open");
+  $("#sheet").setAttribute("aria-hidden", "false");
+  document.body.style.overflow = "hidden";
+}
+function closeSheet(){
+  captureForm();                          // nipping back to the menu must not lose their details
+  $("#scrim").classList.remove("open");
+  $("#sheet").classList.remove("open");
+  $("#sheet").setAttribute("aria-hidden", "true");
+  document.body.style.overflow = "";
+}
+$("#barBtn").addEventListener("click", openSheet);
+$("#sheetClose").addEventListener("click", closeSheet);
+$("#scrim").addEventListener("click", closeSheet);
+document.addEventListener("keydown", e => { if (e.key === "Escape") closeSheet(); });
+
+function renderSheet(){
+  if (S.sheet === "done") return renderDone();
+
+  const lines = basketLines();
+  $("#sheetTitle").textContent = "Your order";
+
+  if (!lines.length){
+    $("#sheetBody").innerHTML =
+      `<div class="empty"><i class="ph ph-shopping-bag"></i>
+        <strong>Nothing in your basket yet</strong>
+        Have a look at the menu and add something.</div>`;
+    $("#sheetFoot").innerHTML =
+      `<button class="btn btn-ghost" style="width:100%" id="goMenu">Back to the menu</button>`;
+    // Closing the sheet is not the same as getting back to the menu.
+    // Take them there.
+    $("#goMenu").addEventListener("click", () => {
+      closeSheet();
+      document.getElementById("menu")
+        ?.scrollIntoView({ behavior: prefersReduced() ? "auto" : "smooth", block: "start" });
+    });
+    return;
+  }
+
+  const canOrder = S.shop && S.shop.can_order;
+
+  $("#sheetBody").innerHTML =
+    (!canOrder ? shutNote() : "") +
+    lines.map(l => `
+      <div class="brow">
+        <div>
+          <div class="brow-n">${esc(l.item.name)}</div>
+          <div class="brow-p num">${money(l.item.price)} each</div>
+        </div>
+        ${stepper(String(l.item.id), l.qty)}
+        <div class="brow-t num">${money(l.item.price * l.qty)}</div>
+      </div>`).join("") +
+    `<div style="height:18px"></div>
+     <div class="field">
+       <label for="fName">Your name</label>
+       <input id="fName" autocomplete="name" placeholder="Name for the order" value="${esc(S.form.name)}">
+     </div>
+     <div class="field">
+       <label for="fPhone">Mobile number</label>
+       <input id="fPhone" type="tel" inputmode="tel" autocomplete="tel" placeholder="07700 900123" value="${esc(S.form.phone)}">
+       <div class="hint">So we can call you if there is a problem with your order.</div>
+     </div>
+     <div class="field">
+       <label for="fNote">Anything we should know</label>
+       <textarea id="fNote" placeholder="No salad, extra spicy, that sort of thing">${esc(S.form.note)}</textarea>
+     </div>`;
+
+  // The error belongs next to the button, not at the top of a scrolled
+  // sheet. On a phone the customer is looking at the button when they
+  // tap it; an error rendered above the fields is invisible and reads
+  // as "nothing happened".
+  $("#sheetFoot").innerHTML = `
+    ${S.error ? `<div class="err" id="sheetErr">${esc(S.error)}${
+      // Offer the phone only when the fault is ours. Dangling a number
+      // next to "please tell us your name" is noise.
+      S.errorTel ? ` <a class="tel" href="tel:${TEL.dial}">${TEL.display}</a>` : ""
+    }</div>` : ""}
+    <div class="totals"><span class="k">Total to pay at the counter</span>
+      <span class="v num">${money(basketTotal())}</span></div>
+    <button class="btn btn-flame" style="width:100%" id="place" ${canOrder ? "" : "disabled"}>
+      ${canOrder ? "Place order" : "Closed right now"}
+    </button>
+    ${canOrder ? `<div class="foot-note">
+      Ready in about ${esc((S.shop && S.shop.prep_minutes) || 20)} minutes.
+      Pay by cash or card when you collect.
+    </div>` : ""}`;
+
+  const btn = $("#place");
+  if (btn && canOrder) btn.addEventListener("click", place);
+}
+
+function shutNote(){
+  const s = S.shop || {};
+
+  // "Unknown" is not the same as "closed", and must not be reported as
+  // one. If we cannot reach the kitchen we say so, rather than telling
+  // someone we have stopped taking orders when we have no idea.
+  if (s.unknown){
+    return `<div class="shut-note"><i class="ph ph-warning-circle" aria-hidden="true"></i>
+      <span>We cannot check whether the kitchen is open at the moment.
+      Please ring us on <a class="tel" href="tel:${TEL.dial}">${TEL.display}</a>
+      before heading over.</span></div>`;
+  }
+
+  const msg = s.accepting_orders === false
+    ? (s.closed_message || "We have paused online orders for a little while.")
+    : (s.opens_at ? `We are closed right now. We open again at ${esc(s.opens_at)}.` : "We are closed right now.");
+
+  return `<div class="shut-note"><i class="ph ph-moon" aria-hidden="true"></i>
+    <span>${msg} You can still build your order and send it when we open.</span></div>`;
+}
+
+async function place(){
+  if (S.sending) return;
+  captureForm();                          // so a rejected attempt keeps what they typed
+
+  const name  = S.form.name.trim();
+  const phone = S.form.phone.trim();
+  const note  = S.form.note.trim();
+
+  if (!name){ return failWith("Please tell us your name.", "#fName"); }
+  if (phone.replace(/\D+/g, "").length < 10){ return failWith("Please enter a valid UK mobile number.", "#fPhone"); }
+
+  store.set("rc.name", name); store.set("rc.phone", phone);
+
+  S.sending = true; S.error = null;
+  const btn = $("#place");
+  btn.disabled = true; btn.textContent = "Sending to the kitchen";
+
+  try{
+    const r = await fetch("/api/order", {
+      method: "POST", headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        name, phone, note,
+        items: basketLines().map(l => ({ id: l.item.id, qty: l.qty }))
+      })
+    });
+    const d = await r.json();
+    if (!r.ok || !d.ok) throw new Error(d.error || "We could not place your order.");
+
+    S.done = d;
+    S.form.note = "";                     // name and phone stay for next time
+    S.basket.clear(); store.set("rc.basket.v1", {});
+    renderBar(); renderMenu(); initMotion(true);
+    S.sheet = "done"; renderSheet();
+  }catch(e){
+    failWith(String(e.message || "Something went wrong. Please try again."), null, true);
+  }finally{
+    S.sending = false;
+  }
+}
+
+// Show an error and put the cursor where the fix is. A rejected order
+// that looks like it did nothing is an abandoned order.
+function failWith(msg, focusSel, showTel){
+  S.error = msg; S.errorTel = !!showTel;
+  renderSheet();
+  const field = focusSel && $(focusSel);
+  if (field){
+    field.focus();
+    field.scrollIntoView({ behavior: prefersReduced() ? "auto" : "smooth", block: "center" });
+  }
+  return false;
+}
+
+function renderDone(){
+  const d = S.done || {};
+  $("#sheetTitle").textContent = "Order placed";
+  $("#sheetBody").innerHTML = `
+    <div class="done">
+      <p>Your order number</p>
+      <div class="no num">#${esc(d.order_no ?? "")}</div>
+      <p>We are cooking it now. Ready in about <strong>${esc(d.ready_in || 20)} minutes</strong>.</p>
+      <p>Give your name at the counter and pay when you collect.</p>
+      <div style="margin-top:18px" class="totals">
+        <span class="k">To pay on collection</span>
+        <span class="v num">${money(d.total)}</span>
+      </div>
+    </div>`;
+  $("#sheetFoot").innerHTML =
+    `<button class="btn btn-flame" style="width:100%" id="doneBtn">Done</button>`;
+  $("#doneBtn").addEventListener("click", () => { closeSheet(); S.sheet = "basket"; });
+}
+
+/* ─── Motion ────────────────────────────────────────────────── */
+/* Three jobs only: bring the hero in on load, reveal menu rows as they
+   arrive so a long list does not land all at once, and track which
+   category you are reading. Nothing moves that does not mean something. */
+function initMotion(refreshOnly){
+  if (prefersReduced() || typeof gsap === "undefined") {
+    $$(".rv").forEach(el => { el.style.opacity = 1; el.style.transform = "none"; });
+    return;
+  }
+  gsap.registerPlugin(ScrollTrigger);
+
+  if (!refreshOnly){
+    gsap.from(".hero h1", { y: 34, opacity: 0, duration: .9, ease: "power3.out" });
+    gsap.from(".hero-sub, .hero-cta", { y: 22, opacity: 0, duration: .8, stagger: .08, delay: .12, ease: "power3.out" });
+    gsap.from(".hero-mark img", { scale: .92, opacity: 0, duration: 1.1, delay: .1, ease: "power3.out" });
+  }
+
+  ScrollTrigger.getAll().forEach(t => { if (t.vars.id === "rv" || t.vars.id === "cat") t.kill(); });
+
+  $$(".rv").forEach(el => {
+    gsap.to(el, {
+      opacity: 1, y: 0, duration: .65, ease: "power2.out",
+      scrollTrigger: { id: "rv", trigger: el, start: "top 88%", once: true }
+    });
+  });
+
+  $$(".cat").forEach(cat => {
+    ScrollTrigger.create({
+      id: "cat", trigger: cat, start: "top 40%", end: "bottom 40%",
+      onToggle: self => {
+        if (!self.isActive) return;
+        const id = cat.id.replace("cat-", "");
+        $$(".catnav button").forEach(b =>
+          b.setAttribute("aria-current", String(b.dataset.cat === id)));
+      }
+    });
+  });
+
+  ScrollTrigger.refresh();
+}
+
+load();
+});
+</script>
+</body>
+</html>

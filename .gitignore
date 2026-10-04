@@ -1,0 +1,8 @@
+# Wrangler's local dev state. Machine-specific, never deployed.
+.wrangler/
+node_modules/
+
+# Local secrets for `wrangler pages dev`. Real values live in the
+# Cloudflare dashboard, never in the repo.
+.dev.vars
+.env
