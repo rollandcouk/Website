@@ -6,3 +6,8 @@ node_modules/
 # Cloudflare dashboard, never in the repo.
 .dev.vars
 .env
+
+# Local experiment, not for the live site.
+unwrap-test.html
+scrub-test.html
+assets/seq-test/
