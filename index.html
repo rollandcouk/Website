@@ -564,10 +564,10 @@ const esc = s => String(s ?? "").replace(/[&<>"']/g, c =>
 /* Storage can throw in private browsing. A basket that forgets itself
    is a nuisance; a page that will not load is a lost order. */
 /* ─── Shop details ──────────────────────────────────────────── */
-// CHANGE ME before going live. Several places on this site tell a
+// Several places on this site tell a
 // customer to ring the shop, so the number has to be real and it has to
 // be here, in one place. Set TEL to the takeaway's landline or mobile.
-const TEL = { display: "01204 000000", dial: "+441204000000" };
+const TEL = { display: "01204 953400", dial: "+441204953400" };
 
 const store = {
   get(k, fb){ try{ const v = localStorage.getItem(k); return v === null ? fb : JSON.parse(v); }catch{ return fb; } },
