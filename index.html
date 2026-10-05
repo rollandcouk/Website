@@ -223,17 +223,34 @@ h1 .fire{
 /* Ingredient labels, pinned to the outside margins with the rule
    pointing in at the food. No room for them beside a phone-width shot,
    and there the picture is the point. */
+/* Ingredient callouts, pinned to the outside margins with a rule
+   pointing in at the food. They sit on a photograph, so they get a
+   backdrop of their own — thin grey type over a lit griddle reads as
+   dirt on the lens, not as a label. */
 .hero-tags{position:absolute;inset:0;z-index:2;pointer-events:none}
 .hero-tags b{
-  position:absolute;top:var(--y);font-weight:600;font-size:.68rem;
-  letter-spacing:.16em;text-transform:uppercase;color:var(--ink-2);
+  position:absolute;top:var(--y);display:inline-flex;align-items:center;gap:9px;
+  font-family:var(--display);font-weight:800;font-size:.8rem;
+  letter-spacing:.1em;text-transform:uppercase;color:var(--ink);
   white-space:nowrap;opacity:0;
+  padding:8px 14px;border-radius:var(--r-pill);
+  background:color-mix(in srgb, var(--surface) 72%, transparent);
+  border:1px solid color-mix(in srgb, var(--flame-2) 26%, transparent);
+  backdrop-filter:blur(10px);
+  box-shadow:0 10px 30px rgba(0,0,0,.45);
 }
-.hero-tags b[data-side="l"]{left:max(20px,4vw);padding-left:26px}
-.hero-tags b[data-side="r"]{right:max(20px,4vw);padding-right:26px}
-.hero-tags b::before{content:"";position:absolute;top:50%;width:18px;height:1px}
-.hero-tags b[data-side="l"]::before{left:0;background:linear-gradient(90deg,transparent,var(--flame-2))}
-.hero-tags b[data-side="r"]::before{right:0;background:linear-gradient(90deg,var(--flame-2),transparent)}
+/* A lit dot, so each one reads as a point on the food rather than a
+   floating word. */
+.hero-tags b::after{
+  content:"";width:6px;height:6px;border-radius:50%;flex:none;
+  background:var(--flame-2);
+  box-shadow:0 0 10px 1px color-mix(in srgb, var(--flame-2) 70%, transparent);
+}
+.hero-tags b[data-side="l"]{left:max(20px,4vw);margin-left:30px}
+.hero-tags b[data-side="r"]{right:max(20px,4vw);margin-right:30px;flex-direction:row-reverse}
+.hero-tags b::before{content:"";position:absolute;top:50%;width:26px;height:1px}
+.hero-tags b[data-side="l"]::before{right:-26px;background:linear-gradient(90deg,var(--flame-2),transparent)}
+.hero-tags b[data-side="r"]::before{left:-26px;background:linear-gradient(90deg,transparent,var(--flame-2))}
 @media (max-width:820px){ .hero-tags{display:none} }
 .hero-trust li{display:flex;align-items:center;gap:7px}
 .hero-trust i{color:var(--flame-2);font-size:1.05rem}
@@ -584,8 +601,8 @@ footer a:hover{color:var(--ink)}
           <div class="hero-live" id="heroLive" aria-live="polite">
             <span class="dot"></span><span class="txt">Checking if we are open</span>
           </div>
-          <h1>Chicken, <span class="fire">fire</span>,<br>paratha.</h1>
-          <p class="hero-sub">Cooked to order in Bolton.</p>
+          <h1>Roll <span class="fire">&amp;</span> Co.</h1>
+          <p class="hero-sub">Chicken, fire, paratha. Cooked to order in Bolton.</p>
         </div>
       </div>
 
