@@ -137,14 +137,29 @@ h1,h2,h3{font-family:var(--display);font-weight:900;letter-spacing:-.035em;margi
   .hero-grid{grid-template-columns:1fr;gap:28px}
 }
 
-/* The fire behind everything. Pure CSS so there is nothing to load,
-   and it sits under a real photograph the moment one exists. */
+/* The fire behind everything. The gradients are the floor: they paint
+   instantly, carry the look on their own, and are what a customer sees
+   if the canvas never starts. The canvas layers live embers on top. */
 .ember{
   position:absolute;inset:0;z-index:-1;pointer-events:none;
   background:
     radial-gradient(60% 50% at 78% 38%, rgba(255,122,0,.26), transparent 70%),
     radial-gradient(45% 40% at 92% 62%, rgba(255,59,0,.20), transparent 72%),
     radial-gradient(70% 60% at 12% 88%, rgba(255,193,7,.07), transparent 70%);
+}
+.griddle-fx{
+  position:absolute;inset:0;z-index:-1;pointer-events:none;
+  width:100%;height:100%;display:block;
+  opacity:0;transition:opacity 1.1s var(--ease);
+}
+.griddle-fx.on{opacity:1}
+
+/* Charcoal floor under the whole hero, so the embers rise out of
+   something rather than off the edge of the page. */
+.hero::after{
+  content:"";position:absolute;left:0;right:0;bottom:0;height:34%;
+  z-index:-1;pointer-events:none;
+  background:linear-gradient(to top,var(--bg) 8%,rgba(13,12,11,.55) 54%,transparent);
 }
 .hero-photo{
   position:absolute;inset:0;z-index:-2;
@@ -168,8 +183,61 @@ h1 .fire{
 .hero-mark img{
   width:min(100%,460px);
   filter:drop-shadow(0 26px 70px rgba(255,90,0,.38));
+  transition:opacity .5s var(--ease);
 }
+.hero-mark img.handed-off{opacity:0}
 @media (max-width:900px){ .hero-mark img{width:min(78%,340px)} }
+
+/* Live open/shut, in the hero where the decision gets made. */
+.hero-live{
+  display:inline-flex;align-items:center;gap:9px;
+  padding:7px 14px 7px 12px;margin-bottom:22px;
+  border:1px solid var(--line);border-radius:var(--r-pill);
+  background:color-mix(in srgb,var(--surface) 78%,transparent);
+  backdrop-filter:blur(8px);
+  font-size:.82rem;font-weight:600;color:var(--ink-2);
+  letter-spacing:.01em;
+}
+.hero-live .dot{
+  width:8px;height:8px;border-radius:50%;background:var(--muted);
+  box-shadow:0 0 0 0 transparent;flex:none;
+}
+.hero-live.is-open .dot{
+  background:var(--open);
+  animation:livePulse 2.4s var(--ease) infinite;
+}
+.hero-live.is-open{color:var(--ink)}
+.hero-live.is-shut .dot{background:var(--shut)}
+@keyframes livePulse{
+  0%{box-shadow:0 0 0 0 color-mix(in srgb,var(--open) 55%,transparent)}
+  70%{box-shadow:0 0 0 9px transparent}
+  100%{box-shadow:0 0 0 0 transparent}
+}
+@media (prefers-reduced-motion:reduce){ .hero-live.is-open .dot{animation:none} }
+
+/* Three reasons to trust the order, under the button where the
+   hesitation happens. */
+.hero-trust{
+  display:flex;flex-wrap:wrap;gap:8px 22px;margin:26px 0 0;padding:0;
+  list-style:none;font-size:.84rem;color:var(--muted);
+}
+.hero-trust li{display:flex;align-items:center;gap:7px}
+.hero-trust i{color:var(--flame-2);font-size:1.05rem}
+
+/* Scroll cue. The menu is the point of the page; say so. */
+.hero-scroll{
+  position:absolute;left:50%;bottom:26px;transform:translateX(-50%);
+  display:inline-flex;align-items:center;gap:8px;
+  color:var(--muted);font-size:.76rem;font-weight:600;
+  letter-spacing:.14em;text-transform:uppercase;text-decoration:none;
+  padding:10px 16px;border-radius:var(--r-pill);
+  transition:color .25s var(--ease),background .25s var(--ease);
+}
+.hero-scroll:hover{color:var(--ink);background:color-mix(in srgb,var(--surface) 70%,transparent)}
+.hero-scroll i{font-size:1rem;animation:cueDrift 2.6s var(--ease) infinite}
+@keyframes cueDrift{0%,100%{transform:translateY(0);opacity:.55}50%{transform:translateY(5px);opacity:1}}
+@media (prefers-reduced-motion:reduce){ .hero-scroll i{animation:none} }
+@media (max-width:900px){ .hero-scroll{display:none} }
 
 /* ─── Section furniture ────────────────────────────────────── */
 section{position:relative}
@@ -420,15 +488,22 @@ footer a:hover{color:var(--ink)}
 <!-- ══ Hero ══ -->
 <header class="hero" id="top">
   <div class="ember" aria-hidden="true"></div>
+  <canvas class="griddle-fx" id="griddleFx" aria-hidden="true"></canvas>
   <!-- Becomes a real photograph the moment one exists. See the note in
        the handover: one strong shot carries this whole section. -->
   <div class="hero-photo" id="heroPhoto" aria-hidden="true"></div>
   <div class="wrap hero-grid">
     <div>
+      <!-- Open or shut, above the fold, before anything else. It is the
+           first thing anyone wants to know and it used to be a small dot
+           up in the nav. -->
+      <div class="hero-live" id="heroLive" aria-live="polite">
+        <span class="dot"></span><span class="txt">Checking if we are open</span>
+      </div>
+
       <h1>Chicken,<br><span class="fire">fire</span>, paratha.</h1>
       <p class="hero-sub">
         Burgers, rolls, loaded fries and rice, cooked to order in Bolton.
-        Ready in about twenty minutes.
       </p>
       <div class="hero-cta">
         <a class="btn btn-flame" href="#menu">
@@ -436,13 +511,25 @@ footer a:hover{color:var(--ink)}
         </a>
         <a class="btn btn-ghost" href="#find">Find us</a>
       </div>
+      <ul class="hero-trust">
+        <li><i class="ph ph-fire" aria-hidden="true"></i> Cooked to order</li>
+        <li><i class="ph ph-timer" aria-hidden="true"></i> Ready in ~20 min</li>
+        <li><i class="ph ph-wallet" aria-hidden="true"></i> Pay at the counter</li>
+      </ul>
     </div>
     <div class="hero-mark">
       <!-- logo-mark, not logo: the other file has a cream background
-           baked into the PNG and shows as a pale slab on charcoal. -->
-      <img src="/assets/logo-mark.png" alt="" width="460" height="300" fetchpriority="high">
+           baked into the PNG and shows as a pale slab on charcoal.
+           Once the canvas is running this is hidden and redrawn into it
+           between the two ember passes, so embers cross in front of it. -->
+      <img src="/assets/logo-mark.png" alt="" width="460" height="300" fetchpriority="high" id="heroMark">
     </div>
   </div>
+
+  <a class="hero-scroll" href="#menu" aria-label="Skip to the menu">
+    <span>Menu</span>
+    <i class="ph ph-arrow-down" aria-hidden="true"></i>
+  </a>
 </header>
 
 <!-- ══ Menu ══ -->
@@ -546,6 +633,7 @@ footer a:hover{color:var(--ink)}
   <div class="sheet-foot" id="sheetFoot"></div>
 </aside>
 
+<script src="/assets/griddle.js" defer></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js" defer></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js" defer></script>
 <script defer>
@@ -607,6 +695,114 @@ function captureForm(){
 }
 
 /* ─── Load ──────────────────────────────────────────────────── */
+/* ─── The swirl ─────────────────────────────────────────────── */
+/* Measured off the artwork: the spiral's centre sits at 48.5% across
+   and 36.9% down the mark. A highlight sweeps round it rather than the
+   pixels rotating — rotating a crop would need the spiral cut out of
+   the PNG, and the seam would show on every frame. */
+const SPIRAL = { x: 0.485, y: 0.369, r: 0.105 };
+
+function spinSpiral(ctx, box, t, appear){
+  const cx = box.x + box.w * SPIRAL.x;
+  const cy = box.y + box.h * SPIRAL.y;
+  const r  = box.w * SPIRAL.r;
+  const a  = t * 0.9;                       // one slow turn, anticlockwise
+
+  ctx.save();
+  ctx.globalCompositeOperation = "lighter";
+
+  // Warm core, breathing.
+  const core = ctx.createRadialGradient(cx, cy, 0, cx, cy, r * 1.5);
+  const puls = 0.6 + Math.sin(t * 1.4) * 0.4;
+  core.addColorStop(0, `rgba(255,214,120,${0.3 * puls * appear})`);
+  core.addColorStop(0.6, `rgba(255,150,30,${0.1 * puls * appear})`);
+  core.addColorStop(1, "rgba(255,120,0,0)");
+  ctx.fillStyle = core;
+  ctx.fillRect(cx - r * 1.6, cy - r * 1.6, r * 3.2, r * 3.2);
+
+  // Two highlights chasing each other round the groove of the spiral.
+  for (let i = 0; i < 2; i++){
+    const ang = a + i * Math.PI;
+    const rr  = r * (0.55 + i * 0.3);
+    const hx  = cx + Math.cos(ang) * rr;
+    const hy  = cy + Math.sin(ang) * rr * 0.92;
+    const hg  = ctx.createRadialGradient(hx, hy, 0, hx, hy, r * 0.5);
+    hg.addColorStop(0, `rgba(255,248,214,${0.4 * appear})`);
+    hg.addColorStop(1, "rgba(255,200,80,0)");
+    ctx.fillStyle = hg;
+    ctx.fillRect(hx - r * 0.5, hy - r * 0.5, r, r);
+  }
+  ctx.restore();
+}
+
+/* ─── The griddle ────────────────────────────────────────────── */
+/* The canvas is the cooking surface. The mark is drawn into it between
+   the heat and the smoke, so smoke drifts across the logo rather than
+   behind it — the one detail that puts the logo ON the griddle instead
+   of in front of a picture of one.
+
+   Everything degrades to what is already on screen: if the canvas never
+   starts, the CSS gradients and the plain <img> are there and nothing
+   is missing. */
+function startGriddle(){
+  const cv = $("#griddleFx"), mark = $("#heroMark");
+  if (!cv || typeof GriddleFX === "undefined") return;
+
+  let logo = null, box = null, handed = false;
+
+  // Where the <img> sits, in canvas coordinates. Read on start and on
+  // resize only: per frame it is a layout read sixty times a second for
+  // a number that almost never changes.
+  function measure(){
+    if (!mark) return;
+    const a = mark.getBoundingClientRect(), b = cv.getBoundingClientRect();
+    if (!a.width || !b.width) return;
+    box = { x: a.left - b.left, y: a.top - b.top, w: a.width, h: a.height };
+  }
+
+  if (mark){
+    const img = new Image();
+    img.onload = () => { logo = img; measure(); };
+    img.src = mark.currentSrc || mark.src;
+  }
+
+  let rt;
+  addEventListener("resize", () => { clearTimeout(rt); rt = setTimeout(measure, 160); });
+
+  GriddleFX.init(cv, {
+    middle(ctx, w, h, appear, p, t){
+      if (!logo || !box) return;
+
+      ctx.save();
+      ctx.globalAlpha = appear;
+      // Sitting on hot metal, not floating over a fire. A tight dark
+      // contact shadow reads as weight; the big orange bloom the ember
+      // version had made it hover.
+      ctx.shadowColor = "rgba(0,0,0,.55)";
+      ctx.shadowBlur = 26;
+      ctx.shadowOffsetY = 10;
+      ctx.drawImage(logo, box.x, box.y, box.w, box.h);
+      ctx.restore();
+
+      // The swirl in the first "o" is a rolled paratha. It is the only
+      // thing in the mark worth moving, so it is the only thing moving.
+      spinSpiral(ctx, box, t, appear);
+
+      // Hand the <img> over only once the canvas copy is actually on
+      // screen. Any earlier and there is a gap where the logo is hidden
+      // and nothing has been painted — one frame normally, but seconds
+      // in a background tab where requestAnimationFrame never fires.
+      if (!handed){
+        handed = true;
+        cv.classList.add("on");
+        mark.classList.add("handed-off");
+      }
+    }
+  });
+
+  if (!mark) requestAnimationFrame(() => cv.classList.add("on"));
+}
+
 function renderTel(){
   const a = $("#telFind");
   if (a){ a.textContent = TEL.display; a.href = `tel:${TEL.dial}`; }
@@ -616,6 +812,7 @@ function renderTel(){
 
 async function load(){
   renderTel();
+  startGriddle();
   try{
     const r = await fetch("/api/menu");
     const d = await r.json();
@@ -636,14 +833,36 @@ async function load(){
 
 /* ─── Status ────────────────────────────────────────────────── */
 function renderStatus(){
-  const el = $("#status"), s = S.shop;
-  if (!s || s.unknown){ el.querySelector(".txt").textContent = "Hours unavailable"; return; }
+  const el = $("#status"), live = $("#heroLive"), s = S.shop;
+
+  if (!s || s.unknown){
+    el.querySelector(".txt").textContent = "Hours unavailable";
+    if (live){
+      live.classList.remove("is-open", "is-shut");
+      live.querySelector(".txt").textContent = `Call us on ${TEL.display}`;
+    }
+    return;
+  }
+
   const open = !!s.can_order;
   el.classList.toggle("is-open", open);
   el.classList.toggle("is-shut", !open);
   el.querySelector(".txt").textContent =
     open ? `Open until ${s.closes_at}`
          : (s.accepting_orders === false ? "Not taking orders" : "Closed");
+
+  // The hero version says more, because it has the room and because it
+  // is the one people actually read.
+  if (live){
+    live.classList.toggle("is-open", open);
+    live.classList.toggle("is-shut", !open);
+    live.querySelector(".txt").textContent =
+      open ? `Open now — taking orders until ${s.closes_at}`
+           : (s.accepting_orders === false
+               ? "Not taking online orders right now"
+               : (s.opens_at ? `Closed — we open at ${s.opens_at}` : "Closed today"));
+  }
+
   $("#findStatus").textContent =
     open ? `Open now until ${s.closes_at}`
          : (s.opens_at ? `Closed now. Opens at ${s.opens_at}` : "Closed today");
@@ -988,9 +1207,15 @@ function initMotion(refreshOnly){
   gsap.registerPlugin(ScrollTrigger);
 
   if (!refreshOnly){
-    gsap.from(".hero h1", { y: 34, opacity: 0, duration: .9, ease: "power3.out" });
-    gsap.from(".hero-sub, .hero-cta", { y: 22, opacity: 0, duration: .8, stagger: .08, delay: .12, ease: "power3.out" });
-    gsap.from(".hero-mark img", { scale: .92, opacity: 0, duration: 1.1, delay: .1, ease: "power3.out" });
+    gsap.from(".hero-live", { y: 14, opacity: 0, duration: .7, ease: "power3.out" });
+    gsap.from(".hero h1", { y: 34, opacity: 0, duration: .9, delay: .06, ease: "power3.out" });
+    gsap.from(".hero-sub, .hero-cta, .hero-trust", { y: 22, opacity: 0, duration: .8, stagger: .08, delay: .14, ease: "power3.out" });
+    gsap.from(".hero-scroll", { opacity: 0, duration: .8, delay: .7, ease: "power2.out" });
+    // Not .hero-mark img. Once the canvas has taken the logo, that <img>
+    // is hidden by a class, and a `from` tween would write opacity:1
+    // inline and win — leaving the logo drawn twice, once flat and once
+    // in the fire. The canvas fades itself in instead.
+
   }
 
   ScrollTrigger.getAll().forEach(t => { if (t.vars.id === "rv" || t.vars.id === "cat") t.kill(); });
