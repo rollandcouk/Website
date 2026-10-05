@@ -128,25 +128,41 @@ h1,h2,h3{font-family:var(--display);font-weight:900;letter-spacing:-.035em;margi
   display:grid;align-items:center;
   padding:40px 0 120px;overflow:hidden;
 }
-.hero-grid{
-  display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,.85fr);
-  gap:48px;align-items:center;
-}
+/* One column now. The photograph is the right-hand half, so the text
+   column stops before it rather than sitting on top of the food. */
+.hero-grid{display:grid;grid-template-columns:minmax(0,54%);gap:48px;align-items:center}
+@media (max-width:1100px){ .hero-grid{grid-template-columns:minmax(0,66%)} }
 @media (max-width:900px){
-  .hero{min-height:auto;padding:32px 0 96px}
+  .hero{min-height:88vh;padding:32px 0 96px}
   .hero-grid{grid-template-columns:1fr;gap:28px}
 }
 
-/* The fire behind everything. The gradients are the floor: they paint
-   instantly, carry the look on their own, and are what a customer sees
-   if the canvas never starts. The canvas layers live embers on top. */
-.ember{
-  position:absolute;inset:0;z-index:-1;pointer-events:none;
-  background:
-    radial-gradient(60% 50% at 78% 38%, rgba(255,122,0,.26), transparent 70%),
-    radial-gradient(45% 40% at 92% 62%, rgba(255,59,0,.20), transparent 72%),
-    radial-gradient(70% 60% at 12% 88%, rgba(255,193,7,.07), transparent 70%);
+.hero-shot{position:absolute;inset:0;z-index:-3;display:block}
+.hero-shot img{
+  width:100%;height:100%;object-fit:cover;
+  /* Keep the roll itself out of the text column. */
+  object-position:72% 58%;
+  /* The shot is lit for a photograph, not for type over it. */
+  filter:saturate(1.06) contrast(1.04) brightness(.82);
 }
+@media (max-width:900px){ .hero-shot img{object-position:62% 56%} }
+
+/* Legibility, and nothing more. A flat black veil would kill the fire,
+   so this is weighted to the left where the words are and lets the
+   right-hand flames through almost untouched. */
+.hero-scrim{
+  position:absolute;inset:0;z-index:-2;pointer-events:none;
+  background:
+    linear-gradient(100deg, var(--bg) 4%, rgba(13,12,11,.88) 32%, rgba(13,12,11,.42) 58%, rgba(13,12,11,.12) 82%),
+    linear-gradient(to top, var(--bg) 2%, transparent 26%);
+}
+@media (max-width:900px){
+  .hero-scrim{
+    background:
+      linear-gradient(to top, var(--bg) 6%, rgba(13,12,11,.9) 34%, rgba(13,12,11,.55) 62%, rgba(13,12,11,.25) 100%);
+  }
+}
+
 .griddle-fx{
   position:absolute;inset:0;z-index:-1;pointer-events:none;
   width:100%;height:100%;display:block;
@@ -154,19 +170,6 @@ h1,h2,h3{font-family:var(--display);font-weight:900;letter-spacing:-.035em;margi
 }
 .griddle-fx.on{opacity:1}
 
-/* Charcoal floor under the whole hero, so the embers rise out of
-   something rather than off the edge of the page. */
-.hero::after{
-  content:"";position:absolute;left:0;right:0;bottom:0;height:34%;
-  z-index:-1;pointer-events:none;
-  background:linear-gradient(to top,var(--bg) 8%,rgba(13,12,11,.55) 54%,transparent);
-}
-.hero-photo{
-  position:absolute;inset:0;z-index:-2;
-  background-size:cover;background-position:center;
-  opacity:0;transition:opacity .8s var(--ease);
-}
-.hero-photo.has-image{opacity:.5}
 
 h1{font-size:clamp(3.1rem,12vw,7.2rem);line-height:.88}
 h1 .fire{
@@ -179,14 +182,6 @@ h1 .fire{
 .hero-cta{display:flex;gap:12px;flex-wrap:wrap;align-items:center}
 .hero-cta .btn{height:54px;padding:0 28px;font-size:1rem}
 
-.hero-mark{position:relative;display:grid;place-items:center}
-.hero-mark img{
-  width:min(100%,460px);
-  filter:drop-shadow(0 26px 70px rgba(255,90,0,.38));
-  transition:opacity .5s var(--ease);
-}
-.hero-mark img.handed-off{opacity:0}
-@media (max-width:900px){ .hero-mark img{width:min(78%,340px)} }
 
 /* Live open/shut, in the hero where the decision gets made. */
 .hero-live{
@@ -238,6 +233,69 @@ h1 .fire{
 @keyframes cueDrift{0%,100%{transform:translateY(0);opacity:.55}50%{transform:translateY(5px);opacity:1}}
 @media (prefers-reduced-motion:reduce){ .hero-scroll i{animation:none} }
 @media (max-width:900px){ .hero-scroll{display:none} }
+
+/* ─── The layers ───────────────────────────────────────────── */
+.layers{position:relative;overflow:hidden}
+.layers::before{
+  /* Heat behind the food, so it is lit by something rather than
+     floating on a flat panel. */
+  content:"";position:absolute;inset:0;z-index:0;pointer-events:none;
+  background:radial-gradient(44% 56% at 72% 50%, rgba(255,106,0,.14), transparent 68%);
+}
+.layers-grid{
+  position:relative;z-index:1;
+  display:grid;grid-template-columns:minmax(0,1fr) minmax(0,.86fr);
+  gap:clamp(28px,5vw,72px);align-items:center;
+}
+@media (max-width:900px){ .layers-grid{grid-template-columns:1fr;gap:34px} }
+
+.eyebrow{
+  font-family:var(--display);font-weight:700;font-size:.74rem;
+  letter-spacing:.2em;text-transform:uppercase;color:var(--flame-2);
+  margin:0 0 16px;
+}
+.layers-copy h2{margin-bottom:18px}
+.lede{color:var(--ink-2);font-size:1.05rem;line-height:1.6;max-width:42ch;margin:0 0 28px}
+
+/* Numbers as the hero, the way a spec sheet does it. */
+.specs{
+  display:grid;grid-template-columns:repeat(auto-fit,minmax(118px,1fr));
+  gap:1px;margin:0 0 30px;padding:0;
+  background:var(--line);border:1px solid var(--line);border-radius:var(--r-surface);
+  overflow:hidden;
+}
+.specs div{background:var(--surface);padding:15px 16px}
+.specs dt{
+  font-size:.7rem;letter-spacing:.15em;text-transform:uppercase;
+  color:var(--muted);margin-bottom:7px;
+}
+/* The number carries it; the unit is a footnote. Keeping them the same
+   size made "16 layers" wrap and drag the whole row taller. */
+.specs dd{
+  margin:0;font-family:var(--display);font-weight:900;
+  font-size:1.6rem;letter-spacing:-.03em;color:var(--ink);
+  display:flex;align-items:baseline;gap:5px;white-space:nowrap;
+}
+.specs dd span{
+  font-size:.72rem;font-weight:700;letter-spacing:.06em;
+  text-transform:uppercase;color:var(--muted);
+}
+
+.layers-shot{position:relative;margin:0}
+.layers-shot img{width:100%;height:auto;display:block}
+.layers-shot figcaption{position:absolute;inset:0;pointer-events:none}
+.layers-shot figcaption span{
+  position:absolute;left:2%;top:var(--t);
+  font-size:.7rem;font-weight:600;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--ink-2);white-space:nowrap;
+  padding-left:30px;
+}
+/* A rule running out to the ingredient it names. */
+.layers-shot figcaption span::before{
+  content:"";position:absolute;left:0;top:50%;width:22px;height:1px;
+  background:linear-gradient(90deg,var(--flame-2),transparent);
+}
+@media (max-width:620px){ .layers-shot figcaption{display:none} }
 
 /* ─── Section furniture ────────────────────────────────────── */
 section{position:relative}
@@ -487,11 +545,17 @@ footer a:hover{color:var(--ink)}
 
 <!-- ══ Hero ══ -->
 <header class="hero" id="top">
-  <div class="ember" aria-hidden="true"></div>
+  <!-- The real thing, on a real griddle, over real fire. This replaced
+       a logo on a gradient, and it is the single biggest change on the
+       page: people buy the food, not the badge. -->
+  <picture class="hero-shot" aria-hidden="true">
+    <source srcset="/assets/hero-griddle.webp" type="image/webp">
+    <img src="/assets/hero-griddle.jpg" alt="" width="1600" height="893" fetchpriority="high" decoding="async">
+  </picture>
+  <!-- Live heat laid over the photograph. The flames in the shot are
+       fixed; this is the part that answers to your hand. -->
   <canvas class="griddle-fx" id="griddleFx" aria-hidden="true"></canvas>
-  <!-- Becomes a real photograph the moment one exists. See the note in
-       the handover: one strong shot carries this whole section. -->
-  <div class="hero-photo" id="heroPhoto" aria-hidden="true"></div>
+  <div class="hero-scrim" aria-hidden="true"></div>
   <div class="wrap hero-grid">
     <div>
       <!-- Open or shut, above the fold, before anything else. It is the
@@ -517,13 +581,6 @@ footer a:hover{color:var(--ink)}
         <li><i class="ph ph-wallet" aria-hidden="true"></i> Pay at the counter</li>
       </ul>
     </div>
-    <div class="hero-mark">
-      <!-- logo-mark, not logo: the other file has a cream background
-           baked into the PNG and shows as a pale slab on charcoal.
-           Once the canvas is running this is hidden and redrawn into it
-           between the two ember passes, so embers cross in front of it. -->
-      <img src="/assets/logo-mark.png" alt="" width="460" height="300" fetchpriority="high" id="heroMark">
-    </div>
   </div>
 
   <a class="hero-scroll" href="#menu" aria-label="Skip to the menu">
@@ -540,6 +597,43 @@ footer a:hover{color:var(--ink)}
     <div id="menuRoot">
       <div class="skel"></div><div class="skel"></div><div class="skel"></div><div class="skel"></div>
     </div>
+  </div>
+</section>
+
+<!-- ══ The layers ══ -->
+<section class="sec layers" id="layers">
+  <div class="wrap layers-grid">
+    <div class="layers-copy rv">
+      <p class="eyebrow">// 01. The roll</p>
+      <h2>Six layers,<br>one wrap.</h2>
+      <p class="lede">
+        The paratha goes on the griddle first and gets its blisters. Everything
+        else goes in while it is still too hot to hold.
+      </p>
+      <dl class="specs">
+        <div><dt>Griddle</dt><dd class="num">220<span>&deg;C</span></dd></div>
+        <div><dt>Paratha</dt><dd class="num">16<span>layers</span></dd></div>
+        <div><dt>Marinade</dt><dd class="num">12<span>hrs</span></dd></div>
+        <div><dt>To order</dt><dd class="num">20<span>min</span></dd></div>
+      </dl>
+      <a class="btn btn-flame" href="#menu">
+        <i class="ph ph-shopping-bag" aria-hidden="true"></i> See the menu
+      </a>
+    </div>
+    <figure class="layers-shot rv">
+      <img src="/assets/layers.webp" alt="A chicken paratha roll with its layers separated: flaky paratha, grilled chicken, lettuce, red onion, tomato and garlic sauce."
+           width="900" height="1205" loading="lazy" decoding="async">
+      <!-- Pinned to the picture, not the page, so they stay on the right
+           ingredient at any width. -->
+      <figcaption>
+        <span style="--t:14%">Herbs</span>
+        <span style="--t:30%">Tomato</span>
+        <span style="--t:42%">Red onion</span>
+        <span style="--t:52%">Garlic sauce</span>
+        <span style="--t:63%">Chicken</span>
+        <span style="--t:82%">Paratha</span>
+      </figcaption>
+    </figure>
   </div>
 </section>
 
@@ -695,112 +789,16 @@ function captureForm(){
 }
 
 /* ─── Load ──────────────────────────────────────────────────── */
-/* ─── The swirl ─────────────────────────────────────────────── */
-/* Measured off the artwork: the spiral's centre sits at 48.5% across
-   and 36.9% down the mark. A highlight sweeps round it rather than the
-   pixels rotating — rotating a crop would need the spiral cut out of
-   the PNG, and the seam would show on every frame. */
-const SPIRAL = { x: 0.485, y: 0.369, r: 0.105 };
-
-function spinSpiral(ctx, box, t, appear){
-  const cx = box.x + box.w * SPIRAL.x;
-  const cy = box.y + box.h * SPIRAL.y;
-  const r  = box.w * SPIRAL.r;
-  const a  = t * 0.9;                       // one slow turn, anticlockwise
-
-  ctx.save();
-  ctx.globalCompositeOperation = "lighter";
-
-  // Warm core, breathing.
-  const core = ctx.createRadialGradient(cx, cy, 0, cx, cy, r * 1.5);
-  const puls = 0.6 + Math.sin(t * 1.4) * 0.4;
-  core.addColorStop(0, `rgba(255,214,120,${0.3 * puls * appear})`);
-  core.addColorStop(0.6, `rgba(255,150,30,${0.1 * puls * appear})`);
-  core.addColorStop(1, "rgba(255,120,0,0)");
-  ctx.fillStyle = core;
-  ctx.fillRect(cx - r * 1.6, cy - r * 1.6, r * 3.2, r * 3.2);
-
-  // Two highlights chasing each other round the groove of the spiral.
-  for (let i = 0; i < 2; i++){
-    const ang = a + i * Math.PI;
-    const rr  = r * (0.55 + i * 0.3);
-    const hx  = cx + Math.cos(ang) * rr;
-    const hy  = cy + Math.sin(ang) * rr * 0.92;
-    const hg  = ctx.createRadialGradient(hx, hy, 0, hx, hy, r * 0.5);
-    hg.addColorStop(0, `rgba(255,248,214,${0.4 * appear})`);
-    hg.addColorStop(1, "rgba(255,200,80,0)");
-    ctx.fillStyle = hg;
-    ctx.fillRect(hx - r * 0.5, hy - r * 0.5, r, r);
-  }
-  ctx.restore();
-}
-
 /* ─── The griddle ────────────────────────────────────────────── */
-/* The canvas is the cooking surface. The mark is drawn into it between
-   the heat and the smoke, so smoke drifts across the logo rather than
-   behind it — the one detail that puts the logo ON the griddle instead
-   of in front of a picture of one.
-
-   Everything degrades to what is already on screen: if the canvas never
-   starts, the CSS gradients and the plain <img> are there and nothing
-   is missing. */
+/* The canvas is pure heat now, laid over the photograph. The shot
+   supplies the plate, the coals and the roll; this supplies the part
+   that answers to your hand. No logo to hand over any more, so the
+   whole measure-and-swap dance is gone with it. */
 function startGriddle(){
-  const cv = $("#griddleFx"), mark = $("#heroMark");
+  const cv = $("#griddleFx");
   if (!cv || typeof GriddleFX === "undefined") return;
-
-  let logo = null, box = null, handed = false;
-
-  // Where the <img> sits, in canvas coordinates. Read on start and on
-  // resize only: per frame it is a layout read sixty times a second for
-  // a number that almost never changes.
-  function measure(){
-    if (!mark) return;
-    const a = mark.getBoundingClientRect(), b = cv.getBoundingClientRect();
-    if (!a.width || !b.width) return;
-    box = { x: a.left - b.left, y: a.top - b.top, w: a.width, h: a.height };
-  }
-
-  if (mark){
-    const img = new Image();
-    img.onload = () => { logo = img; measure(); };
-    img.src = mark.currentSrc || mark.src;
-  }
-
-  let rt;
-  addEventListener("resize", () => { clearTimeout(rt); rt = setTimeout(measure, 160); });
-
-  GriddleFX.init(cv, {
-    middle(ctx, w, h, appear, p, t){
-      if (!logo || !box) return;
-
-      ctx.save();
-      ctx.globalAlpha = appear;
-      // Sitting on hot metal, not floating over a fire. A tight dark
-      // contact shadow reads as weight; the big orange bloom the ember
-      // version had made it hover.
-      ctx.shadowColor = "rgba(0,0,0,.55)";
-      ctx.shadowBlur = 26;
-      ctx.shadowOffsetY = 10;
-      ctx.drawImage(logo, box.x, box.y, box.w, box.h);
-      ctx.restore();
-
-      // The swirl in the first "o" is a rolled paratha. It is the only
-      // thing in the mark worth moving, so it is the only thing moving.
-      spinSpiral(ctx, box, t, appear);
-
-      // Hand the <img> over only once the canvas copy is actually on
-      // screen. Any earlier and there is a gap where the logo is hidden
-      // and nothing has been painted — one frame normally, but seconds
-      // in a background tab where requestAnimationFrame never fires.
-      if (!handed){
-        handed = true;
-        cv.classList.add("on");
-        mark.classList.add("handed-off");
-      }
-    }
-  });
-
-  if (!mark) requestAnimationFrame(() => cv.classList.add("on"));
+  GriddleFX.init(cv, { surface: false });
+  requestAnimationFrame(() => cv.classList.add("on"));
 }
 
 function renderTel(){
@@ -1211,11 +1209,10 @@ function initMotion(refreshOnly){
     gsap.from(".hero h1", { y: 34, opacity: 0, duration: .9, delay: .06, ease: "power3.out" });
     gsap.from(".hero-sub, .hero-cta, .hero-trust", { y: 22, opacity: 0, duration: .8, stagger: .08, delay: .14, ease: "power3.out" });
     gsap.from(".hero-scroll", { opacity: 0, duration: .8, delay: .7, ease: "power2.out" });
-    // Not .hero-mark img. Once the canvas has taken the logo, that <img>
-    // is hidden by a class, and a `from` tween would write opacity:1
-    // inline and win — leaving the logo drawn twice, once flat and once
-    // in the fire. The canvas fades itself in instead.
-
+    // The photograph is deliberately not tweened. It is the first thing
+    // on the page and the thing people came for; fading it in costs a
+    // beat and buys nothing.
+    gsap.from(".hero-shot img", { scale: 1.06, duration: 1.6, ease: "power2.out" });
   }
 
   ScrollTrigger.getAll().forEach(t => { if (t.vars.id === "rv" || t.vars.id === "cat") t.kill(); });

@@ -86,7 +86,13 @@
 
       GH = Math.max(8, Math.round(GW * (h / w)));
       cell = w / GW;
+      allocate();
+      // With a photograph behind it there is nothing to invent: the
+      // canvas becomes pure heat laid over a real griddle.
+      if (opts.surface !== false) buildSurface();
+    }
 
+    function allocate() {
       heat = new Float32Array(GW * GH);
       next = new Float32Array(GW * GH);
 
@@ -94,8 +100,6 @@
       grid.width = GW; grid.height = GH;
       gctx = grid.getContext("2d");
       gimg = gctx.createImageData(GW, GH);
-
-      buildSurface();
     }
 
     /* The cold metal underneath. Drawn once — it never changes, and
@@ -146,7 +150,9 @@
 
     function stamp(nx, ny, amount) {
       var cx = nx * GW, cy = ny * GH;
-      var rad = mobile ? 4.2 : 5.4;
+      // Wider over a photograph. A tight brush there draws a disc; the
+      // effect has to feel like warmth spreading, not a spotlight.
+      var rad = (mobile ? 4.2 : 5.4) * (opts.surface === false ? 1.9 : 1);
       var x0 = Math.max(0, (cx - rad) | 0), x1 = Math.min(GW - 1, (cx + rad) | 0);
       var y0 = Math.max(0, (cy - rad) | 0), y1 = Math.min(GH - 1, (cy + rad) | 0);
       for (var y = y0; y <= y1; y++) {
@@ -255,14 +261,17 @@
       ghost.a += dt * 0.55;
       var gx = 0.5 + Math.cos(ghost.a) * 0.3 + Math.cos(ghost.a * 0.37) * 0.11;
       var gy = 0.54 + Math.sin(ghost.a * 0.82) * 0.2;
-      sear(ghost.x, ghost.y, gx, gy, dt * 3.1);
+      // Over a photograph this is only there to keep the plate alive, so
+      // it stays well under what a hand does. Run it at full strength
+      // and it paints bright discs wandering across the food.
+      sear(ghost.x, ghost.y, gx, gy, dt * (opts.surface === false ? 1.0 : 3.1));
       ghost.x = gx; ghost.y = gy;
     }
 
     function render() {
       ctx.clearRect(0, 0, w, h);
 
-      if (surface) ctx.drawImage(surface, 0, 0, w, h);
+      if (surface && opts.surface !== false) ctx.drawImage(surface, 0, 0, w, h);
 
       // Grid -> offscreen pixels -> scaled up. The browser's bilinear
       // filter is doing the blur, which is why this stays cheap.
@@ -276,18 +285,28 @@
       }
       gctx.putImageData(gimg, 0, 0);
 
+      var photo = opts.surface === false;
+      var k = photo ? (opts.intensity == null ? 0.5 : opts.intensity) : 1;
+
       ctx.save();
       ctx.imageSmoothingEnabled = true;
       ctx.imageSmoothingQuality = "high";
       ctx.globalCompositeOperation = "lighter";
-      // Drawn twice: once soft and wide for the bloom, once tight for
+
+      // Drawn twice: once soft and wide for the bloom, once tighter for
       // the sear itself. One pass alone reads as either a smudge or a
       // sticker, never as hot metal.
-      ctx.globalAlpha = 0.55;
-      ctx.filter = "blur(14px)";
-      ctx.drawImage(grid, -cell, -cell, w + cell * 2, h + cell * 2);
+      //
+      // Over a photograph the balance flips. There is no cold steel for
+      // a hot core to sit in, so a sharp bright centre reads as a lamp
+      // hanging in mid-air rather than metal glowing. The wide pass does
+      // nearly all the work and the tight one only lifts it, which makes
+      // the heat look like it belongs to the fire already in the shot.
+      ctx.globalAlpha = (photo ? 0.8 : 0.55) * k;
+      ctx.filter = "blur(" + (photo ? 30 : 14) + "px)";
+      ctx.drawImage(grid, -cell * 2, -cell * 2, w + cell * 4, h + cell * 4);
       ctx.filter = "none";
-      ctx.globalAlpha = 1;
+      ctx.globalAlpha = (photo ? 0.28 : 1) * k;
       ctx.drawImage(grid, 0, 0, w, h);
       ctx.restore();
     }
