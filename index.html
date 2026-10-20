@@ -807,6 +807,10 @@ const TEL = { display: "01204 953400", dial: "+441204953400" };
    The date lives in /assets/opening.js; without that file this is off. */
 const OPENS = window.RC_OPENS || null;
 const OPENS_TXT = OPENS ? OPENS.toLocaleDateString("en-GB", { weekday:"long", day:"numeric", month:"long", timeZone:"Europe/London" }) : "";
+const preOpen = () => !!OPENS && Date.now() < OPENS.getTime();
+// Prices aren't final yet, so before opening the menu shows dishes only:
+// no prices, no add buttons, no basket. All of it returns on opening day.
+if (preOpen()) document.documentElement.classList.add("rc-preopen");
 function applyPreOpen(shop){
   if (shop && OPENS && Date.now() < OPENS.getTime())
     Object.assign(shop, { can_order:false, accepting_orders:false, unknown:false, preopen:true });
@@ -1027,13 +1031,13 @@ function itemRow(i){
       <div class="item-name">${esc(i.name)}${i.badge ? `<span class="sig">${esc(i.badge)}</span>` : ""}</div>
       ${i.description ? `<div class="item-desc">${esc(i.description)}</div>` : ""}
     </div>
-    <div class="item-right">
+    ${preOpen() ? "" : `<div class="item-right">
       <span class="price num">${money(i.price)}</span>
       ${qty > 0 ? stepper(id, qty) : `
         <button class="add" data-add="${esc(id)}" aria-label="Add ${esc(i.name)}">
           <i class="ph ph-plus" aria-hidden="true"></i>
         </button>`}
-    </div>
+    </div>`}
   </div>`;
 }
 

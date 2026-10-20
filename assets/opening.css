@@ -36,4 +36,6 @@
   background:var(--flame);color:#1A0C00;font-family:var(--display);font-weight:800;font-size:.9rem;text-align:center;
 }
 .oc-bar a{color:#1A0C00;text-decoration:underline;text-underline-offset:3px}
+/* Before opening: no basket (it would show prices from an old visit). */
+.rc-preopen #bar,.rc-preopen #sheet,.rc-preopen #scrim{display:none !important}
 @media (prefers-reduced-motion:reduce){.oc-screen{animation:none}}
