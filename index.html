@@ -564,6 +564,8 @@ footer a:hover{color:var(--ink)}
   *{animation-duration:.01ms !important;transition-duration:.01ms !important}
 }
 </style>
+<!-- Pre-opening countdown; switches itself off on opening day. Remove these two lines after. -->
+<link rel="stylesheet" href="/assets/opening.css">
 </head>
 <body>
 
@@ -801,6 +803,16 @@ const esc = s => String(s ?? "").replace(/[&<>"']/g, c =>
 // be here, in one place. Set TEL to the takeaway's landline or mobile.
 const TEL = { display: "01204 953400", dial: "+441204953400" };
 
+/* Before opening day the menu is browsable but nothing can be ordered.
+   The date lives in /assets/opening.js; without that file this is off. */
+const OPENS = window.RC_OPENS || null;
+const OPENS_TXT = OPENS ? OPENS.toLocaleDateString("en-GB", { weekday:"long", day:"numeric", month:"long", timeZone:"Europe/London" }) : "";
+function applyPreOpen(shop){
+  if (shop && OPENS && Date.now() < OPENS.getTime())
+    Object.assign(shop, { can_order:false, accepting_orders:false, unknown:false, preopen:true });
+  return shop;
+}
+
 const store = {
   get(k, fb){ try{ const v = localStorage.getItem(k); return v === null ? fb : JSON.parse(v); }catch{ return fb; } },
   set(k, v){ try{ localStorage.setItem(k, JSON.stringify(v)); }catch{} }
@@ -909,7 +921,7 @@ async function load(){
     const d = await r.json();
     if (!r.ok) throw new Error(d.error || "Menu unavailable");
     S.categories = d.categories || [];
-    S.shop = d.shop || null;
+    S.shop = applyPreOpen(d.shop || null);
     for (const c of S.categories) for (const i of c.items) S.items.set(String(i.id), i);
     renderMenu(); renderStatus(); renderHours(); renderBar();
     requestAnimationFrame(initMotion);
@@ -925,6 +937,17 @@ async function load(){
 /* ─── Status ────────────────────────────────────────────────── */
 function renderStatus(){
   const el = $("#status"), live = $("#heroLive"), s = S.shop;
+
+  if (s && s.preopen){
+    el.classList.remove("is-open"); el.classList.add("is-shut");
+    el.querySelector(".txt").textContent = "Opening soon";
+    if (live){
+      live.classList.remove("is-open"); live.classList.add("is-shut");
+      live.querySelector(".txt").textContent = `Opening ${OPENS_TXT}. Ordering starts then.`;
+    }
+    $("#findStatus").textContent = `Opening ${OPENS_TXT}`;
+    return;
+  }
 
   if (!s || s.unknown){
     el.querySelector(".txt").textContent = "Hours unavailable";
@@ -1088,7 +1111,7 @@ async function refreshShop(){
     const d = await fetch("/api/menu", { cache: "no-store" }).then(r => r.ok ? r.json() : null);
     if (!d || !d.shop) return;
     const was = S.shop && S.shop.can_order;
-    S.shop = d.shop;
+    S.shop = applyPreOpen(d.shop);
     renderStatus();
     if (was !== d.shop.can_order && $("#sheet").classList.contains("open")){
       captureForm();
@@ -1182,7 +1205,7 @@ function renderSheet(){
     <div class="totals"><span class="k">Total to pay at the counter</span>
       <span class="v num">${money(basketTotal())}</span></div>
     <button class="btn btn-flame" style="width:100%" id="place" ${canOrder ? "" : "disabled"}>
-      ${canOrder ? "Place order" : "Closed right now"}
+      ${canOrder ? "Place order" : (S.shop && S.shop.preopen ? "Opening soon" : "Closed right now")}
     </button>
     ${canOrder ? `<div class="foot-note">
       Ready in about ${esc((S.shop && S.shop.prep_minutes) || 20)} minutes.
@@ -1195,6 +1218,13 @@ function renderSheet(){
 
 function shutNote(){
   const s = S.shop || {};
+
+  if (s.preopen){
+    return `<div class="shut-note"><i class="ph ph-calendar-blank" aria-hidden="true"></i>
+      <span>We open on ${esc(OPENS_TXT)}, and online ordering starts then.
+      <a class="tel" href="${esc(window.RC_WHATSAPP || "#")}" target="_blank" rel="noopener">Join the opening list on WhatsApp</a>
+      to hear first.</span></div>`;
+  }
 
   // "Unknown" is not the same as "closed", and must not be reported as
   // one. If we cannot reach the kitchen we say so, rather than telling
@@ -1335,5 +1365,6 @@ function initMotion(refreshOnly){
 load();
 });
 </script>
+<script src="/assets/opening.js"></script>
 </body>
 </html>
