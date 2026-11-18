@@ -29,7 +29,11 @@ export async function onRequestGet({ env }) {
   // decides how the menu reads: food first, biggest sellers near the top,
   // drinks last. Anything new the kitchen adds falls in before drinks
   // rather than vanishing off the end.
-  const ORDER = ["Burgers", "Chicken Rolls", "Loaded Fries", "Rice", "Drinks"];
+  // The order the printed A2 board reads in, so the website and the
+  // thing on the wall agree. Anything the kitchen adds later falls in
+  // before Drinks rather than landing at the top.
+  const ORDER = ["Chicken Rolls", "Burgers", "Chicken Loaded Fries", "Rice",
+                 "Fries & Sides", "Dips", "Extras", "Drinks"];
   const categories = Object.keys(grouped)
     .sort((a, b) => {
       const ia = ORDER.indexOf(a), ib = ORDER.indexOf(b);
