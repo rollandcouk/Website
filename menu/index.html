@@ -1,0 +1,168 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="utf-8">
+<title>Menu — Roll &amp; Co.</title>
+<!-- Zooming is the whole point of this page: it is a printed A2 board on
+     a phone screen, and a customer WILL pinch into the Loaded Fries. The
+     usual user-scalable=no would make it unreadable. -->
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#0D0C0B">
+<meta name="description" content="The Roll &amp; Co. menu — chicken rolls, smash burgers, loaded fries and rice. 290 Wigan Road, Bolton BL3 5QT.">
+<link rel="icon" href="/assets/logo-mark.png">
+
+<meta property="og:title" content="Roll &amp; Co. — Menu">
+<meta property="og:description" content="Chicken rolls, smash burgers, loaded fries and rice. Bolton BL3 5QT.">
+<meta property="og:image" content="https://rollandco.uk/assets/menu-board.jpg">
+<meta property="og:url" content="https://rollandco.uk/menu">
+<meta name="twitter:card" content="summary_large_image">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@85,700;85,900&family=Instrument+Sans:wght@400;500;600&display=swap">
+
+<style>
+:root{
+  --bg:#0D0C0B;
+  --surface:#141211;
+  --line:#2A2522;
+  --ink:#F7F1EA;
+  --ink-2:#CFC3B7;
+  --muted:#897C71;
+  --flame-1:#FF3B00;
+  --flame-2:#FF7A00;
+  --flame-3:#FFC107;
+  --flame:linear-gradient(118deg,var(--flame-1) 0%,var(--flame-2) 52%,var(--flame-3) 100%);
+  --r-pill:999px;
+  --display:"Archivo",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  --body:"Instrument Sans",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+}
+*,*::before,*::after{box-sizing:border-box}
+body{
+  margin:0;background:var(--bg);color:var(--ink);
+  font-family:var(--body);font-size:16px;line-height:1.55;
+  -webkit-font-smoothing:antialiased;
+  padding-bottom:calc(84px + env(safe-area-inset-bottom));
+}
+a{color:inherit}
+:focus-visible{outline:2px solid var(--flame-2);outline-offset:3px;border-radius:4px}
+
+header{
+  display:flex;align-items:center;gap:10px;
+  padding:14px 16px calc(14px);
+  border-bottom:1px solid var(--line);
+  position:sticky;top:0;z-index:5;
+  background:color-mix(in srgb,var(--bg) 92%,transparent);
+  backdrop-filter:blur(10px);
+}
+header img{height:30px;width:auto;display:block}
+header .sp{flex:1}
+header a.back{
+  font-weight:600;font-size:.88rem;color:var(--ink-2);text-decoration:none;
+  padding:7px 13px;border:1px solid var(--line);border-radius:var(--r-pill);
+}
+
+main{max-width:900px;margin:0 auto;padding:18px 16px 0}
+
+h1{
+  font-family:var(--display);font-weight:900;letter-spacing:-.035em;
+  font-size:clamp(1.7rem,7vw,2.5rem);margin:0 0 4px;
+}
+.sub{color:var(--muted);font-size:.92rem;margin:0 0 16px}
+
+/* The board itself. Width-constrained rather than height-constrained, so
+   on a phone it fills the screen edge to edge and the customer scrolls
+   and pinches it like any other picture. */
+.board{
+  display:block;width:100%;height:auto;
+  border-radius:14px;border:1px solid var(--line);
+  background:#FFFDF5;                     /* the artwork's own paper colour,
+                                             so it does not flash black */
+  box-shadow:0 18px 50px rgba(0,0,0,.5);
+}
+
+.note{
+  color:var(--muted);font-size:.84rem;text-align:center;
+  margin:14px 0 0;
+}
+.note a{color:var(--ink-2)}
+
+.facts{
+  display:grid;gap:10px;margin:22px 0 10px;
+  grid-template-columns:repeat(auto-fit,minmax(210px,1fr));
+}
+.fact{
+  background:var(--surface);border:1px solid var(--line);
+  border-radius:14px;padding:13px 15px;
+}
+.fact b{display:block;font-family:var(--display);font-weight:700;font-size:.78rem;
+  letter-spacing:.09em;text-transform:uppercase;color:var(--flame-2);margin-bottom:3px}
+.fact span{color:var(--ink-2);font-size:.95rem}
+
+/* The order button follows you down the page. Someone who has just read
+   the menu and wants to order should never have to scroll back up. */
+.bar{
+  position:fixed;left:0;right:0;bottom:0;z-index:10;
+  padding:12px 16px calc(12px + env(safe-area-inset-bottom));
+  background:color-mix(in srgb,var(--bg) 93%,transparent);
+  backdrop-filter:blur(12px);
+  border-top:1px solid var(--line);
+  display:flex;gap:10px;align-items:center;
+  max-width:900px;margin:0 auto;
+}
+.btn{
+  flex:1;display:flex;align-items:center;justify-content:center;gap:8px;
+  height:52px;border-radius:var(--r-pill);text-decoration:none;
+  font-family:var(--display);font-weight:900;font-size:1rem;letter-spacing:-.01em;
+}
+.btn-flame{background:var(--flame);color:#1A0C00}
+.btn-ghost{
+  flex:0 0 auto;padding:0 20px;border:1px solid var(--line);
+  color:var(--ink);background:var(--surface);font-weight:700;
+}
+@media (max-width:420px){ .btn-ghost{padding:0 15px} }
+</style>
+</head>
+<body>
+
+<header>
+  <a href="/" style="display:flex;align-items:center;text-decoration:none">
+    <img src="/assets/logo.png" alt="Roll &amp; Co." onerror="this.src='/assets/logo-mark.png'">
+  </a>
+  <span class="sp"></span>
+  <a class="back" href="/">Home</a>
+</header>
+
+<main>
+  <h1>The menu</h1>
+  <p class="sub">Pinch to zoom. Tap any section to read it closer.</p>
+
+  <picture>
+    <source srcset="/assets/menu-board.webp" type="image/webp">
+    <img class="board" src="/assets/menu-board.jpg" width="1800" height="2546"
+         alt="Roll &amp; Co. menu: chicken rolls from £6.49, burgers from £4.49, chicken loaded fries from £6.49, rice from £4.99, fries and sides from £1.99, dips 50p, drinks from £1.00. Add £2 to any burger or roll for house fries and a canned drink.">
+  </picture>
+
+  <p class="note">
+    Hard to read on a small screen?
+    <a href="/assets/menu-board.pdf" target="_blank" rel="noopener">Open the full-size version</a>
+  </p>
+
+  <div class="facts">
+    <div class="fact"><b>Where</b><span>290 Wigan Road<br>Bolton BL3 5QT</span></div>
+    <div class="fact"><b>Open</b><span>Every day, 3pm – 11pm</span></div>
+    <div class="fact"><b>Call us</b><span><a href="tel:+441204953400" style="text-decoration:none">01204 953400</a></span></div>
+  </div>
+
+  <p class="note" style="margin-bottom:20px">
+    Please tell us about any food allergies before ordering. All our food is halal.
+  </p>
+</main>
+
+<div class="bar">
+  <a class="btn btn-flame" href="/#menu">Order online</a>
+  <a class="btn btn-ghost" href="tel:+441204953400">Call</a>
+</div>
+
+</body>
+</html>
