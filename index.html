@@ -563,11 +563,26 @@ footer a:hover{color:var(--ink)}
 @media (prefers-reduced-motion:reduce){
   *{animation-duration:.01ms !important;transition-duration:.01ms !important}
 }
+/* Launch day */
+.promo-strip{
+  display:none;align-items:center;justify-content:center;gap:10px;text-align:center;
+  padding:10px 16px;background:var(--flame,#FF6A00);color:#1A0C00;
+  font-family:var(--display);font-weight:900;letter-spacing:.06em;text-transform:uppercase;
+  font-size:clamp(.72rem,2.4vw,.86rem);line-height:1.35;position:relative;z-index:50;
+}
+.promo-strip.on{display:flex}
+.price .was,.brow-p .was{opacity:.45;text-decoration:line-through;font-weight:600;margin-right:3px}
+.price .now,.brow-p .now{color:var(--flame,#FF6A00)}
+@media (prefers-reduced-motion:no-preference){
+  .promo-strip.on{animation:promoIn .5s ease-out both}
+  @keyframes promoIn{from{transform:translateY(-100%)}to{transform:none}}
+}
 </style>
 <!-- Pre-opening countdown; switches itself off on opening day. Remove these two lines after. -->
 <link rel="stylesheet" href="/assets/opening.css?v=2">
 </head>
 <body>
+<div class="promo-strip" id="promoStrip"></div>
 
 <div class="grain" aria-hidden="true"></div>
 
@@ -927,7 +942,7 @@ async function load(){
     S.categories = d.categories || [];
     S.shop = applyPreOpen(d.shop || null);
     for (const c of S.categories) for (const i of c.items) S.items.set(String(i.id), i);
-    renderMenu(); renderStatus(); renderHours(); renderBar();
+    renderMenu(); renderStatus(); renderHours(); renderBar(); renderPromoStrip();
     requestAnimationFrame(initMotion);
   }catch(e){
     $("#menuRoot").innerHTML =
@@ -1032,7 +1047,7 @@ function itemRow(i){
       ${i.description ? `<div class="item-desc">${esc(i.description)}</div>` : ""}
     </div>
     ${preOpen() ? "" : `<div class="item-right">
-      <span class="price num">${money(i.price)}</span>
+      <span class="price num">${priceHtml(i.price)}</span>
       ${qty > 0 ? stepper(id, qty) : `
         <button class="add" data-add="${esc(id)}" aria-label="Add ${esc(i.name)}">
           <i class="ph ph-plus" aria-hidden="true"></i>
@@ -1089,11 +1104,43 @@ const basketTotal = () => round2(basketLines().reduce((s, l) => s + l.item.price
 const basketCount = () => basketLines().reduce((s, l) => s + l.qty, 0);
 const round2 = n => Math.round((Number(n) || 0) * 100) / 100;
 
+/* -- Launch day --------------------------------------------------
+   The SAME promotion the till runs, so the website can never quote a
+   price the counter will not honour. Both use the BUSINESS date, which
+   rolls at 04:00 - an order placed at 00:30 on the 22nd still belongs
+   to Saturday and is still half price.
+
+   The site never takes payment. It shows the offer; the till applies it
+   when the customer pays at the counter. That is deliberate: one place
+   decides what anything costs, and it is the one holding the money. */
+const PROMO = { from: "2026-11-20", to: "2026-11-21", pct: 50, label: "50% off everything" };
+const businessDate = () => {
+  const d = new Date(Date.now() - 4 * 3600000);
+  return d.getFullYear() + "-" + String(d.getMonth()+1).padStart(2,"0") + "-" + String(d.getDate()).padStart(2,"0");
+};
+const promoOn   = () => { const d = businessDate(); return !!(PROMO.from && d >= PROMO.from && d <= PROMO.to); };
+const promoPrice = p => round2((Number(p) || 0) * (100 - PROMO.pct) / 100);
+// The strip is the first thing anyone sees on launch day, and it hides
+// itself again at 04:00 on the 22nd with nobody having to remember.
+function renderPromoStrip(){
+  const el = document.getElementById("promoStrip");
+  if (!el) return;
+  const on = promoOn();
+  el.classList.toggle("on", on);
+  if (on) el.textContent = PROMO.label + " today - collection orders too";
+}
+setInterval(renderPromoStrip, 60000);
+// Struck original beside the real one, so nobody has to work out the
+// saving in their head.
+const priceHtml = p => promoOn()
+  ? `<s class="was">${money(p)}</s> <b class="now">${money(promoPrice(p))}</b>`
+  : money(p);
+
 function renderBar(){
   const n = basketCount();
   $("#bar").classList.toggle("show", n > 0);
   $("#barCount").textContent = `${n} ${n === 1 ? "item" : "items"}`;
-  $("#barTotal").textContent = money(basketTotal());
+  $("#barTotal").textContent = money(promoOn() ? round2(basketTotal() * (100 - PROMO.pct) / 100) : basketTotal());
 }
 
 document.addEventListener("click", e => {
@@ -1176,10 +1223,10 @@ function renderSheet(){
       <div class="brow">
         <div>
           <div class="brow-n">${esc(l.item.name)}</div>
-          <div class="brow-p num">${money(l.item.price)} each</div>
+          <div class="brow-p num">${priceHtml(l.item.price)} each</div>
         </div>
         ${stepper(String(l.item.id), l.qty)}
-        <div class="brow-t num">${money(l.item.price * l.qty)}</div>
+        <div class="brow-t num">${money((promoOn() ? promoPrice(l.item.price) : l.item.price) * l.qty)}</div>
       </div>`).join("") +
     `<div style="height:18px"></div>
      <div class="field">
@@ -1206,8 +1253,11 @@ function renderSheet(){
       // next to "please tell us your name" is noise.
       S.errorTel ? ` <a class="tel" href="tel:${TEL.dial}">${TEL.display}</a>` : ""
     }</div>` : ""}
+    ${promoOn() ? `<div class="totals" style="opacity:.55"><span class="k">Before ${PROMO.pct}% off</span>
+      <span class="v num"><s>${money(basketTotal())}</s></span></div>` : ""}
     <div class="totals"><span class="k">Total to pay at the counter</span>
-      <span class="v num">${money(basketTotal())}</span></div>
+      <span class="v num">${money(promoOn() ? round2(basketTotal() * (100 - PROMO.pct) / 100) : basketTotal())}</span></div>
+    ${promoOn() ? `<div class="foot-note" style="margin-top:2px">${esc(PROMO.label)}, taken off when you pay at the counter.</div>` : ""}
     <button class="btn btn-flame" style="width:100%" id="place" ${canOrder ? "" : "disabled"}>
       ${canOrder ? "Place order" : (S.shop && S.shop.preopen ? "Opening soon" : "Closed right now")}
     </button>
